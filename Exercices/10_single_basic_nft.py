@@ -2,7 +2,7 @@ import smartpy as sp
 
 class SingleBasicNFT(sp.Contract):
   def __init__(self, first_owner):
-      self.init(owner=first_owner, metadata="Gwen\'\s first NFT")
+      self.init(owner=first_owner, metadata="Gwen's first NFT")
 
   @sp.entry_point
   def transfer(self, new_owner):
