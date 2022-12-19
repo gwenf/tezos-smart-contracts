@@ -6,7 +6,7 @@ class EndlessWall(sp.Contract):
 
    @sp.entry_point
    def write_message(self, message):
-       sp.verify((sp.len(message)<= 30) & (sp.len(message)>=3), "message less than 30 char")
+       sp.verify((sp.len(message)<= 30) & (sp.len(message)>=3), "message size invalid")
        self.data.wallText += ", " + message + " forever"
        self.data.nbCalls += 1
   
