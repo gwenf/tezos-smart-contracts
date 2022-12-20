@@ -19,5 +19,6 @@ def test():
    scenario.verify(c1.data.wallText=="Axel on Tezos forever, Ana & Jack forever, freeCodeCamp forever")
    scenario += c1.write_message("this message is 31 letters long").run(valid=False)
    scenario += c1.write_message("AB").run(valid=False)
-   scenario += c1.write_message("LLL").run(valid=True)
-   scenario += c1.write_message("this message is 30 characters ").run(valid=True)
+   #by default a transaction is valid, no need to add .run(valid=True) after testing the call
+   scenario += c1.write_message("LLL")
+   scenario += c1.write_message("this message is 30 characters ")
