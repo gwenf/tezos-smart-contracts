@@ -17,5 +17,7 @@ def test():
    scenario += c1.write_message("Ana & Jack")
    scenario += c1.write_message("freeCodeCamp")
    scenario.verify(c1.data.wallText=="Axel on Tezos forever, Ana & Jack forever, freeCodeCamp forever")
-   scenario += c1.write_message("freeCodeCamp is the A ressources").run(valid=False)
+   scenario += c1.write_message("this message is 31 letters long").run(valid=False)
    scenario += c1.write_message("AB").run(valid=False)
+   scenario += c1.write_message("LLL").run(valid=True)
+   scenario += c1.write_message("this message is 30 characters ").run(valid=True)
