@@ -19,8 +19,9 @@ def test():
    scenario = sp.test_scenario()
    scenario += c1
    scenario.h1("testing add entrypoint")
-   c1.add(5)
+   c1.add(1)
+    #Add verification with scenario.verify
    c1.add(9)
-   scenario.verify(c1.data.storedValue==14)
+   scenario.verify(c1.data.storedValue==10)
    c1.add(10).run(valid=False)
    c1.add(0).run(valid=False)
