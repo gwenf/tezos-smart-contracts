@@ -19,6 +19,8 @@ def test():
         scenario = sp.test_scenario()
         scenario+=c1
         c1.set(minValue=5, maxValue=10)
+        #show that you have errors when not naming params in entrypoint call
+        #c1.set(5, 10)
         c1.addNumber(20)
         scenario.verify(c1.data.maxValue==30)
         c1.addNumber(-50)
