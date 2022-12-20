@@ -6,7 +6,7 @@ class EndlessWall(sp.Contract):
 
    @sp.entry_point
    def write_message(self, message):
-       sp.verify((sp.len(message)<= 30) & (sp.len(message)>=3), "message less than 30 char")
+       sp.verify((sp.len(message)<= 30) & (sp.len(message)>=3), "invalid size message")
        self.data.wallText += ", " + message + " forever"
   
 @sp.add_test(name = "add my name")
@@ -16,4 +16,6 @@ def test():
    scenario += c1
    scenario += c1.write_message("Ana & Jack")
    scenario += c1.write_message("freeCodeCamp")
-   scenario += c1.write_message("freeCodeCamp is the best learning ressource")
+   scenario.verify(c1.data.wallText=="Axel on Tezos forever, Ana & Jack forever, freeCodeCamp forever")
+   scenario += c1.write_message("freeCodeCamp is the A ressources").run(valid=False)
+   scenario += c1.write_message("AB").run(valid=False)
