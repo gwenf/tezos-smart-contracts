@@ -10,7 +10,7 @@ class FlipValue(sp.Contract):
     def flip(self):
         self.data.bestDigit = 1 - self.data.bestDigit
 
-@sp.add_test(name="Testing")
+@sp.add_test(name = "Testing")
 def test():
     scenario = sp.test_scenario()
     contract = FlipValue()
