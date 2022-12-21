@@ -23,7 +23,7 @@ def test():
    scenario += contract
    contract.add(sp.nat(5))
    scenario.verify(contract.data.storedValue == 47)
-   contract.reset().run(sender = bob)
+   contract.reset().run(sender = bob, valid = False)
    contract.reset().run(sender = alice)
    
    
