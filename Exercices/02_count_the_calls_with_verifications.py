@@ -16,6 +16,6 @@ def test():
    scenario.verify(contract.data.nb_calls == 0)
    contract.make_call()
    scenario.verify(contract.data.nb_calls == 1)
-   #scenario.verify(contract.data.nb_calls == 2) should pass error
+   scenario.verify(contract.data.nb_calls == 2) #should pass error
    contract.make_call()
    scenario.verify(contract.data.nb_calls == 2)
