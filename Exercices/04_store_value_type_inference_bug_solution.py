@@ -14,7 +14,7 @@ class StoreValue(sp.Contract):
        #sp.set_type(b, sp.TInt)
        self.data.storedValue -= b
 
-@sp.add_test(name="Testing")
+@sp.add_test(name = "Testing")
 def test():
    scenario = sp.test_scenario()
    contract = StoreValue()
