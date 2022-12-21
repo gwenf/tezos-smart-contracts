@@ -12,12 +12,12 @@ class StoreValue(sp.Contract):
    def reset(self):
        self.data.storedValue = 0
 
-@sp.add_test(name="Testing")
+@sp.add_test(name = "Testing")
 def test():
    scenario = sp.test_scenario()
    contract = StoreValue()
    scenario += contract
    contract.add(5)
    #you should not pass param when entrypoint with one parameter
-   #contract.add(a=5)
-   scenario.verify(contract.data.storedValue==47)
+   #contract.add(a = 5) would fail
+   scenario.verify(contract.data.storedValue == 47)
