@@ -10,7 +10,7 @@ class EndlessWall(sp.Contract):
   
 @sp.add_test(name = "add my name")
 def test():
-   c1 = EndlessWall(initialText="Axel on Tezos forever")
+   c1 = EndlessWall(initialText = "Axel on Tezos forever")
    scenario = sp.test_scenario()
    scenario += c1
    scenario += c1.write_message("Ana & Jack")
