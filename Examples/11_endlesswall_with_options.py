@@ -10,8 +10,7 @@ class EndlessWall(sp.Contract):
        sp.verify(self.data.lastSender != sp.some(sp.sender), "Do not spam the wall") 
        self.data.wallText += ", " + message + " forever"
        self.data.nbCalls += 1
-       self.data.lastSender = sp.some(sp.sender)
-       
+       self.data.lastSender = sp.some(sp.sender)  
   
 @sp.add_test(name = "add my name")
 def test():
@@ -30,3 +29,4 @@ def test():
    scenario += c1.write_message("LLL").run(sender = alice)
    scenario += c1.write_message("this message is 30 characters ").run(sender = eve)
    scenario.verify(c1.data.nbCalls == 4)
+    
