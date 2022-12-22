@@ -7,10 +7,11 @@ class EndlessWall(sp.Contract):
    @sp.entry_point
    def write_message(self, message):
        sp.verify((sp.len(message) <= 30) & (sp.len(message) >= 3), "invalid message size")
-       sp.verify(self.data.lastSender != sp.sender, "Do not spam the wall" )
+       sp.verify(self.data.lastSender != sp.some(sp.sender), "Do not spam the wall") 
        self.data.wallText += ", " + message + " forever"
        self.data.nbCalls += 1
-       self.data.lastSender = sp.sender
+       self.data.lastSender = sp.some(sp.sender)
+       
   
 @sp.add_test(name = "add my name")
 def test():
@@ -23,8 +24,7 @@ def test():
    scenario += c1.write_message("Ana & Jack").run(sender = eve)
    scenario += c1.write_message("freeCodeCamp").run(sender = bob)
    scenario.verify(c1.data.wallText == "Axel on Tezos forever, Ana & Jack forever, freeCodeCamp forever")
-   scenario += c1.write_message("freeCodeCamp").run(sender = bob, valid = False)
-   scenario += c1.write_message("freeCodeCamp").run(sender = bob, valid = False)
+   scenario += c1.write_message("freeCodeCamp").run(sender = bob, valid = False, exception="Do not spam the wall")
    scenario += c1.write_message("this message is 31 letters long").run(sender = alice, valid = False)
    #by default a transaction is valid, no need to add .run(valid = True) after testing a valid call
    scenario += c1.write_message("LLL").run(sender = alice)
