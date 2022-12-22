@@ -2,11 +2,10 @@ import smartpy as sp
 
 class StoreValue(sp.Contract):
    def __init__(self, owner):
-       self.init(storedValue = sp.nat(42), owner = owner)
+       self.init(storedValue = 42, owner = owner)
 
    @sp.entry_point
    def add(self, a):
-      sp.set_type(a, sp.TNat)
       self.data.storedValue += a
 
    @sp.entry_point
@@ -21,9 +20,10 @@ def test():
    contract = StoreValue(owner = alice)
    scenario = sp.test_scenario()
    scenario += contract
-   contract.add(sp.nat(5))
+   contract.add(5)
    scenario.verify(contract.data.storedValue == 47)
    contract.reset().run(sender = bob, valid = False)
    contract.reset().run(sender = alice)
+   scenario.verify(contract.data.storedValue == 0)
    
    
