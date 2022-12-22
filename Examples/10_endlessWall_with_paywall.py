@@ -31,15 +31,12 @@ def test():
    scenario += c1.write_message("Ana & Jack").run(sender = eve, amount = sp.tez(1))
    scenario += c1.write_message("freeCodeCamp").run(sender = bob, amount = sp.tez(1))
    scenario.verify(c1.data.wallText == "Axel on Tezos forever, Ana & Jack forever, freeCodeCamp forever")
-    #scenario write_message fails for spamming
-   scenario += c1.write_message("bob is the last sender").run(sender = bob, valid = False)
-   scenario += c1.write_message("bob is the last sender").run(sender = bob, valid = False)
     #checking write_message fails for size message
    scenario += c1.write_message("this message is 31 letters long").run(sender = alice, valid = False, amount = sp.tez(1))
    scenario += c1.write_message("AB").run(sender = alice, valid = False, amount = sp.tez(1))
     #checking write_message passes for size message
    scenario += c1.write_message("LLL").run(sender = alice, amount = sp.tez(1))
-   scenario += c1.write_message("this message is 30 characters ").run(sender = eve, amount = sp.tez(1) )
+   scenario += c1.write_message("this message has 30 characters").run(sender = eve, amount = sp.tez(1) )
    scenario.verify(c1.data.nbCalls == 4)
    #checking testing amounts
    scenario += c1.write_message("testing right amount").run(sender = eve,amount = sp.tez(1))
