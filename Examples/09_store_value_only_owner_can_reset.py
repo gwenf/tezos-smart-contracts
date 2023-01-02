@@ -20,8 +20,10 @@ def test():
    contract = StoreValue(owner = alice)
    scenario = sp.test_scenario()
    scenario += contract
+   scenario.h3("Testing add entrypoint")
    contract.add(5)
    scenario.verify(contract.data.storedValue == 47)
+   scenario.h3(" Testing reset entrypoint, only owner can reset")
    contract.reset().run(sender = bob, valid = False)
    contract.reset().run(sender = alice)
    scenario.verify(contract.data.storedValue == 0)
