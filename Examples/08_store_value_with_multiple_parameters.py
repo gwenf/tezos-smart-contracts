@@ -20,11 +20,13 @@ def test():
         c1 = StoreValue(minValue = 0, maxValue = 5)
         scenario = sp.test_scenario()
         scenario += c1
+        scenario.h3(" Setting Min and Max")
         c1.set(newMinValue = 5, newMaxValue = 10)
         scenario.verify(c1.data.minValue == 5)
         scenario.verify(c1.data.maxValue == 10)
         #show that you have errors when not naming params in entrypoint call
         #c1.set(5, 10)
+        scenario.h3(" Testing Add Number and Verify")
         c1.addNumber(20)
         scenario.verify(c1.data.minValue == 25)
         scenario.verify(c1.data.maxValue == 30)
