@@ -36,7 +36,7 @@ def test():
    scenario += c1.write_message("LLL").run(sender = alice, amount = sp.tez(1))
    scenario += c1.write_message("this message has 30 characters").run(sender = eve, amount = sp.tez(1) )
    scenario.verify(c1.data.nbCalls == 4)
-   scenario.h3(" Checking calls pass or fail for right amount")
+   scenario.h3(" Checking calls pass or fail according to the amounts")
    scenario += c1.write_message("testing right amount").run(sender = eve,amount = sp.tez(1))
    scenario += c1.write_message("testing lesser amount").run(sender = eve,amount = sp.mutez(999999), valid = False)
    scenario += c1.write_message("testing bigger amount").run(sender = bob, amount = sp.mutez(1000001), valid = False)
