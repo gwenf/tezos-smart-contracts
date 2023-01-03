@@ -14,9 +14,11 @@ def test():
    c1 = EndlessWall(initialText = "Axel on Tezos forever")
    scenario = sp.test_scenario()
    scenario += c1
+   scenario.h3(" Testing write_message")
    scenario += c1.write_message("Ana & Jack")
    scenario += c1.write_message("freeCodeCamp")
    scenario.verify(c1.data.wallText == "Axel on Tezos forever, Ana & Jack forever, freeCodeCamp forever")
+   scenario.h3(" Testing write_message size message on limits")
    scenario += c1.write_message("this message is 31 letters long").run(valid = False)
    scenario += c1.write_message("AB").run(valid = False)
    #by default a transaction is valid, no need to add .run(valid = True) after testing the call
