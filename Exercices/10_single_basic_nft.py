@@ -17,6 +17,7 @@ class SingleBasicNFT(sp.Contract):
       c1 = SingleBasicNFT(alice)
       scenario = sp.test_scenario()
       scenario += c1
+      scenario.h3(" Testing transfer entrypoint")
       c1.transfer(bob).run(sender = alice)
       c1.transfer(eve).run(sender = bob)
       c1.transfer(alice).run(sender = eve)
