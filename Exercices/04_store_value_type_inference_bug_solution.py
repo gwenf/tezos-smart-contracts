@@ -19,6 +19,7 @@ def test():
    scenario = sp.test_scenario()
    contract = StoreValue()
    scenario += contract
+   scenario.h3(" Helping type inference ")
 #replace sp.nat(5) with sp.int(5)
    contract.add(sp.int(5))
    contract.sub(5)
