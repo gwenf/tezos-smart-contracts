@@ -13,6 +13,7 @@ def test():
    c1 = EndlessWall(initialText = "Axel on Tezos forever")
    scenario = sp.test_scenario()
    scenario += c1
+   scenario.h3("Testing write_message entrypoint")
    scenario += c1.write_message("Ana & Jack")
    scenario += c1.write_message("freeCodeCamp")
    #check the expected output
