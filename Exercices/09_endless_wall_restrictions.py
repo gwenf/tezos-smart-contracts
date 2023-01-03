@@ -22,13 +22,17 @@ def test():
    c1 = EndlessWall(initialText = "Axel on Tezos forever", owner=alice)
    scenario = sp.test_scenario()
    scenario += c1
+   scenario.h3("Testing write_message entrypoint ")
    scenario += c1.write_message("Ana & Jack").run(sender = eve)
    scenario += c1.write_message("freeCodeCamp").run(sender = bob)
    scenario.verify(c1.data.wallText == "Axel on Tezos forever, Ana & Jack forever, freeCodeCamp forever")
+   scenario.h3("Testing user cannot add twice in a row ")
    scenario += c1.write_message("freeCodeCamp").run(sender = bob, valid = False)
    scenario += c1.write_message("freeCodeCamp").run(sender = bob, valid = False)
+   scenario.h3("Testing write_message size message on limits ")
    scenario += c1.write_message("this message is 31 letters long").run(sender = alice, valid = False)
    #by default a transaction is valid, no need to add .run(valid = True) after testing a valid call
    scenario += c1.write_message("LLL").run(sender = alice)
    scenario += c1.write_message("this message is 30 characters ").run(sender = eve)
    scenario.verify(c1.data.nbCalls == 4)
+
