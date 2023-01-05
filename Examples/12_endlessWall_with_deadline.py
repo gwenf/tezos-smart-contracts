@@ -23,7 +23,7 @@ def test():
     alice=sp.test_account("Alice").address
     bob=sp.test_account("Bob").address
     eve=sp.test_account("Eve").address
-    c1 = EndlessWall(initialText = "Axel on Tezos forever", owner=alice, deadline = sp.timestamp_from_utc(2025, 12, 31, 23, 59, 59)
+    c1 = EndlessWall(initialText = "Axel on Tezos forever", owner=alice, deadline = sp.timestamp_from_utc(2025, 12, 31, 23, 59, 59))
     sc = sp.test_scenario()
     sc += c1
     sc.h3(" Testing write_message is ok ")
