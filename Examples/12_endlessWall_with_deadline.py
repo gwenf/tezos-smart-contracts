@@ -1,14 +1,14 @@
 import smartpy as sp
 
 class EndlessWall(sp.Contract):
-   def __init__(self, initialText, owner, timestamp):
-               self.init(wallText = initialText, nbCalls=0, owner = owner, timestamp = timestamp)
+   def __init__(self, initialText, owner, deadline):
+               self.init(wallText = initialText, nbCalls=0, owner = owner, deadline = deadline)
 
    @sp.entry_point
    def write_message(self, message):
        sp.verify((sp.len(message) <= 30) & (sp.len(message) >= 3), "invalid size message")
        sp.verify(sp.amount == sp.tez(1), "incorrect amount")
-       sp.verify(sp.now <= sp.timestamp_from_utc(2025, 12, 31, 23, 59, 59), "After deadline")
+       sp.verify(sp.now <= self.data.deadline, "After deadline")
        #sp.verify(sp.now<sp.)
        self.data.wallText += ", " + message + " forever"
        self.data.nbCalls += 1
@@ -23,7 +23,7 @@ def test():
     alice=sp.test_account("Alice").address
     bob=sp.test_account("Bob").address
     eve=sp.test_account("Eve").address
-    c1 = EndlessWall(initialText = "Axel on Tezos forever", owner=alice, timestamp = sp.now)
+    c1 = EndlessWall(initialText = "Axel on Tezos forever", owner=alice, deadline = sp.timestamp_from_utc(2025, 12, 31, 23, 59, 59)
     sc = sp.test_scenario()
     sc += c1
     sc.h3(" Testing write_message is ok ")
