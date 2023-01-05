@@ -1,7 +1,5 @@
 import smartpy as sp
-
 #specific address that does not exist in tezos
-
 
 nobody = sp.address("KT18amZmM5W7qDWVt2pH6uj7sCEd3kbzLrHT")
 
@@ -29,6 +27,7 @@ def test():
    alice=sp.test_account("Alice").address
    bob=sp.test_account("Bob").address
    eve=sp.test_account("Eve").address
+   #you need to initialize in test your owner 
    c1 = EndlessWall(initialText = "Axel on Tezos forever", owner = nobody )
    scenario = sp.test_scenario()
    scenario += c1
