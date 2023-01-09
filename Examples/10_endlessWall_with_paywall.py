@@ -41,6 +41,7 @@ def test():
    scenario += c1.write_message("testing lesser amount").run(sender = eve,amount = sp.mutez(999999), valid = False)
    scenario += c1.write_message("testing bigger amount").run(sender = bob, amount = sp.mutez(1000001), valid = False)
    scenario += c1.write_message("testing correct amount").run(sender = bob, amount = sp.tez(1))
+   scenario.verify(c1.balance == sp.tez(6))
    scenario.h3(" Checking only owner can claim balance in the contract")
    scenario += c1.claim(sp.tez(3)).run(sender = bob, valid = False)
    scenario += c1.claim(sp.tez(4)).run(sender = alice)
