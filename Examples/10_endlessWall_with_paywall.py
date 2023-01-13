@@ -16,7 +16,13 @@ class EndlessWall(sp.Contract):
    def claim(self, requestedAmount):
         sp.verify(sp.sender == self.data.owner, "not your money")
         sp.send(self.data.owner, requestedAmount)
-  
+
+   @sp.entry_point
+   def claim_all(self):
+        sp.verify(sp.sender == self.data.owner, "not your money")
+        sp.send(self.data.owner, sp.balance)
+
+       
 @sp.add_test(name = "add my name")
 def test():
    alice=sp.test_account("Alice").address
@@ -26,7 +32,7 @@ def test():
    scenario = sp.test_scenario()
    scenario += c1
    scenario.h3(" Testing write_message is ok ")
-   scenario += c1.write_message("Ana & Jack").run(sender = eve, amount = sp.tez(1))
+   c1.write_message("Ana & Jack").run(sender = eve, amount = sp.tez(1))
    scenario += c1.write_message("freeCodeCamp").run(sender = bob, amount = sp.tez(1))
    scenario.verify(c1.data.wallText == "Axel on Tezos forever, Ana & Jack forever, freeCodeCamp forever")
    scenario.h3(" Checking calls fail due to invalid size message ")
@@ -45,3 +51,4 @@ def test():
    scenario.h3(" Checking only owner can claim balance in the contract")
    scenario += c1.claim(sp.tez(3)).run(sender = bob, valid = False)
    scenario += c1.claim(sp.tez(4)).run(sender = alice)
+   scenario += c1.claim_all().run(sender = alice)
