@@ -21,7 +21,7 @@ class YieldFarming(sp.Contract):
     @sp.entry_point
     def set_delegate(self, delegate_option):
         sp.verify(sp.sender == self.data.owner)
-        sp.verify(sp.some(delegate_option) != sp.none)
+        sp.verify(delegate_option != sp.none)
         sp.set_delegate(delegate_option)
 
     @sp.entry_point
@@ -53,7 +53,10 @@ def test():
     alice = sp.test_account("Alice").address
     bob = sp.test_account("Bob").address
     eve = sp.test_account("Eve").address
-    delegate = sp.test_account("delegate").address
+    delegate = sp.test_account("delegate")
+    voting_powers = {
+        delegate.public_key_hash: 0,
+    }
     c1 = YieldFarming(owner = owner, lender = alice, annual_yield_rate = 4, ramp_up_duration = 3600*24*21)
     scenario = sp.test_scenario()
     scenario += c1
@@ -64,5 +67,5 @@ def test():
     c1.withdraw().run(sender=alice, now = sp.timestamp(3600*24*21 + 100))
     c1.owner_withdraw(sp.tez(1)).run(sender=bob, valid = False)
     c1.owner_withdraw(sp.tez(1)).run(sender=owner)
-    #c1.set_delegate(sp.some(sp.key_hash(delegate))).run(sender = owner)
+    c1.set_delegate(sp.some(delegate.public_key_hash)).run(sender = owner, voting_powers = voting_powers)
     
