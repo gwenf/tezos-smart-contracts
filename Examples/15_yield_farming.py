@@ -21,7 +21,6 @@ class YieldFarming(sp.Contract):
     @sp.entry_point
     def set_delegate(self, delegate_option):
         sp.verify(sp.sender == self.data.owner)
-        sp.verify(delegate_option != sp.none)
         sp.set_delegate(delegate_option)
 
     @sp.entry_point
