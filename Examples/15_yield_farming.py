@@ -35,9 +35,10 @@ class YieldFarming(sp.Contract):
     def withdraw(self):
         sp.verify(sp.sender == self.data.lender)
         duration = sp.is_nat(sp.now - (self.data.deposit_date.add_seconds(self.data.ramp_up_duration))).open_some()
+        sp.trace(duration)
         one_year= 365*24*3600
         one_year_yield = sp.mul(self.data.deposit_amount, self.data.annual_yield_rate)
-        duration_yield = sp.split_tokens(one_year_yield, duration, one_year)
+        duration_yield = sp.split_tokens(one_year_yield, duration, one_year*100)
         sp.send(sp.sender, self.data.deposit_amount + duration_yield )
         self.data.deposit_amount = sp.tez(0)
         self.data.deposit_date = sp.timestamp(0)
@@ -68,12 +69,11 @@ def test():
     scenario.verify(c1.balance==sp.tez(105))
     c1.deposit().run(sender=alice, amount = sp.tez(100), valid = False)
     scenario.h3("Testing withdraw entrypoint")
-    #issue with withdraw calculation
-    #c1.withdraw().run(sender=alice, now = sp.timestamp(3600*24*21 + 100 ))
     scenario.h3("Testing owner_withdraw entrypoint")
     c1.owner_withdraw(sp.tez(1)).run(sender=bob, valid = False)
-    c1.owner_withdraw(sp.tez(1)).run(sender=owner)
     c1.owner_withdraw(sp.mutez(1000001)).run(sender=owner, valid = False)
+    c1.owner_withdraw(sp.tez(1)).run(sender=owner)
     scenario.h3("Testing set delegate")
     c1.set_delegate(sp.some(delegate.public_key_hash)).run(sender = owner, voting_powers = voting_powers)
+    c1.withdraw().run(sender=alice, now = sp.timestamp(3600*24*21 + 3600*24*365 ))
     
