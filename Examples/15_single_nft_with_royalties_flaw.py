@@ -21,11 +21,7 @@ def test():
        bob = sp.test_account("bob").address
        eve = sp.test_account("eve").address
        author = sp.test_account("author").address
-       c1 = SingleNftWithFlaw(owner = alice, 
-                              metadata = "Gwen's first NFT", 
-                              price = sp.mutez(5000000), 
-                              author = author,
-                             )
+       c1 = SingleNftWithFlaw(owner = alice, metadata = "Gwen's first NFT", price = sp.mutez(5000000), author = author,)
        scenario = sp.test_scenario()
        scenario +=c1    
        #testing buy entrypoint
