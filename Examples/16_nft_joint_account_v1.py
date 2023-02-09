@@ -41,6 +41,8 @@ def test():
    c1.set_price(sp.mutez(7000000)).run(sender = alice)
    c2.buyNFT(c1.address).run(sender = bob, amount=sp.tez(7))
    c1.set_price(sp.mutez(7000000)).run(sender = eve, valid = False)
+   scenario.verify(c1.data.price != sp.mutez(6000000))
+   scenario.verify(c1.data.price == sp.mutez(7000000))
    c2.buyNFT(c1.address).run(sender = eve, amount=sp.tez(7), valid = False)
    c2.buyNFT(c1.address).run(sender = alice, amount=sp.tez(6), valid = False)
         
