@@ -25,6 +25,12 @@ class NFTJointAccount(sp.Contract):
         sp.verify( (sp.sender == self.data.owner1) | (sp.sender == self.data.owner2))
         c = sp.contract(sp.TUnit,nft_address,entry_point="buy").open_some()
         sp.transfer(sp.unit,sp.amount,c)
+    
+    @sp.entry_point
+    def setNFTPrice(self, nft_address, new_price):
+        sp.verify((sp.sender == self.data.owner1) | (sp.sender == self.data.owner2))
+        nft_contract = sp.contract(sp.TMutez, nft_address, entry_point="set_price").open_some()
+        sp.transfer(new_price, sp.tez(0), nft_contract)
 
 @sp.add_test(name='Testing set_price and buy')
 def test():
@@ -41,9 +47,11 @@ def test():
    c1.set_price(sp.mutez(7000000)).run(sender = alice)
    c2.buyNFT(c1.address).run(sender = bob, amount=sp.tez(7))
    c1.set_price(sp.mutez(7000000)).run(sender = eve, valid = False)
+   scenario.verify(c1.data.price != sp.mutez(6000000))
    scenario.verify(c1.data.price == sp.mutez(7000000))
    c2.buyNFT(c1.address).run(sender = eve, amount=sp.tez(7), valid = False)
    c2.buyNFT(c1.address).run(sender = alice, amount=sp.tez(6), valid = False)
-   #verify that the owner of the NFT is our NFTJointAccount contract
+   c2.setNFTPrice(nft_address = c1.address, new_price = sp.tez(50)).run(sender= eve)
+    #verify that the owner of the NFT is our NFTJointAccount contract
+   scenario.verify(c1.data.price == sp.tez(50))
    scenario.verify(c1.data.owner == c2.address)
-        
