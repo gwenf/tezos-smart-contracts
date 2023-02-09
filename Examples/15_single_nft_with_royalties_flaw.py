@@ -25,6 +25,8 @@ def test():
        scenario = sp.test_scenario()
        scenario +=c1    
        #testing buy entrypoint
-       scenario.h3(" Testing buy entrypoint with correct and incorrect prices")
+       scenario.h3(" Testing buy entrypoint")
        c1.buy().run(sender=bob, amount=sp.mutez(5000000))
+       scenario.verify(c1.balance == sp.mutez(0))
        c1.buy().run(sender=eve, amount=sp.mutez(5500000))
+       scenario.verify(c1.balance == sp.mutez(0))
