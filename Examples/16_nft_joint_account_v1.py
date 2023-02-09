@@ -44,5 +44,6 @@ def test():
    scenario.verify(c1.data.price == sp.mutez(7000000))
    c2.buyNFT(c1.address).run(sender = eve, amount=sp.tez(7), valid = False)
    c2.buyNFT(c1.address).run(sender = alice, amount=sp.tez(6), valid = False)
+   #verify that the owner of the NFT is our NFTJointAccount contract
    scenario.verify(c1.data.owner == c2.address)
         
