@@ -3,19 +3,14 @@ import smartpy as sp
 
 class NftForSale(sp.Contract):
    def __init__(self, owner, metadata, price):
-       self.init(owner = owner, metadata = metadata, price= price, deadline = sp.timestamp(0))
+       self.init(owner = owner, metadata = metadata, price= price)
 
-   @sp.entry_point
-   def set_price(self, new_price, deadline):
-       sp.verify(sp.sender == self.data.owner, "you cannot update the price")
-       self.data.price = new_price
-       self.data.deadline = deadline
 
    @sp.entry_point
    def buy(self):
        sp.verify(sp.amount == self.data.price, "wrong price")
-       sp.verify(sp.now <= self.data.deadline)
        sp.send(self.data.owner, self.data.price)
+       self.data.price += sp.split_tokens(self.data.price, 10, 100)
        self.data.owner = sp.sender
     
 class NftWrapperContract(sp.Contract):
@@ -38,7 +33,6 @@ class NftWrapperContract(sp.Contract):
     @sp.entry_point
     def buy(self):
         sp.verify(sp.amount == self.data.price)
-        #sp.verify(self.data.allowSales == True)
         sp.send(self.data.owner_wrapper, self.data.price)
         self.data.owner_wrapper = sp.sender
         
@@ -62,23 +56,27 @@ def test():
    scenario = sp.test_scenario()
    scenario +=c1
    scenario +=c2
-   scenario.h3(" Testing set_price entrypoint")
-   c1.set_price(new_price = sp.mutez(7000000), deadline = sp.timestamp(100)).run(sender = bob, valid = False)
-   c1.set_price(new_price = sp.mutez(7000000), deadline = sp.timestamp(100)).run(sender = alice)
-   scenario.h3("testing buy NFT from Wrapper")
-   c2.buyNFT(c1.address).run(sender = bob, amount=sp.tez(7), now = sp.timestamp(50))
+   scenario.h3("testing buy NFT from NftforSale")
+   c1.buy().run(sender = dan, amount = sp.tez(5))
+   scenario.verify(c1.data.price == sp.mutez(5500000))
+   c1.buy().run(sender = alice, amount = sp.mutez(5500000))
+   scenario.h3("testing buy NFT with Wrapper")
+   c2.buyNFT(c1.address).run(sender = bob, amount=sp.mutez(6050000))
+   scenario.verify(c1.data.price == sp.mutez(6655000) )
    scenario.verify(c1.data.owner == c2.address)
    scenario.h3("testing allowSales")
    c2.setAllowSale(False).run(sender = eve, valid = False)
    c2.setAllowSale(False).run(sender = bob)
+   scenario.verify(c1.data.price == sp.mutez(6655000))
+   c1.buy().run(sender = dan, amount = sp.mutez(6655000), valid = False)
    scenario.h3("testing setPrice NFT Wrapper")
-   c2.setPrice(sp.tez(50)).run(sender = eve, valid = False)
-   c2.setPrice(sp.tez(50)).run(sender = bob)
-   scenario.verify(c2.data.price == sp.tez(50))
-   scenario.verify(c2.data.owner_wrapper == bob)
-   scenario.h3("trying to buy nft from NFTforSale while not possible")
-   scenario.verify(c1.data.price == sp.tez(7))
-   c1.buy().run(sender = dan, amount = sp.tez(7), valid = False)
+   c2.setPrice(sp.tez(5)).run(sender = eve, valid = False)
+   c2.setPrice(sp.tez(5)).run(sender = bob)
+   c2.buy().run(sender = alice, amount = sp.tez(5))
+   scenario.verify(c2.data.price == sp.tez(5))
+   scenario.verify(c2.data.owner_wrapper == alice)
+   scenario.h3("trying to buy nft from NFTforSale while not possible") 
    scenario.h3("buying NftWrapper i.e. buying NFT at nftwrapper set_price()")
-   c2.buy().run(sender = dan, amount = sp.tez(50))
-   scenario.verify(c2.data.owner_wrapper == dan)
+   c2.setAllowSale(True).run(sender = alice)
+   c1.buy().run(sender = dan, amount = sp.mutez(6655000))
+   scenario.verify(c1.data.owner == dan)
