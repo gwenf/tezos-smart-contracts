@@ -11,7 +11,7 @@ class TrulyEndlessWall(sp.Contract):
        
  
     @sp.entry_point
-    def write_message(self,text,timestamp ):
+    def write_message(self,text,timestamp):
        self.data.messages = sp.update_map(messages, sp.sender, sp.record(text=text, timestamp= timestamp))
 
 
