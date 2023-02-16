@@ -1,0 +1,39 @@
+type storage = { owner: address, deadline: timestamp, bids: map<address, tez>, topBidder: address, topBid: tez };
+type action  = ["Bid"] | ["CollectTopBid"] | ["Claim"];
+const noop : list<operation> = list([]);
+const bid = (s: storage) => {
+    assert_with_error (Tezos.get_now () < s.deadline, "Too late !");
+    assert_with_error (Map.mem(Tezos.get_sender(), s.bids), "You have already bid");
+    let newS = ({...s , bids: Map.update(Tezos.get_sender(), Some(Tezos.get_amount()), s.bids)});
+    return (newS.topBid < Tezos.get_amount())
+          ? [noop, {...newS , topBid: Tezos.get_amount(), topBidder: Tezos.get_sender()}]
+          : [noop, newS];
+    };
+
+const collectTopBid = (s: storage) => {
+       assert_with_error (Tezos.get_now() >= s.deadline, "Too early!");
+       assert_with_error (Tezos.get_sender() == s.owner, "Not the owner");
+       let receiver = Tezos.get_contract_with_error (s.owner, "Contract not found.") as contract<unit>;
+       let op = Tezos.transaction(unit, s.topBid, receiver);
+       let newS = ({...s, topBid: 0 as tez});
+       return [list([op]), newS];
+    };
+    
+const claim = (s: storage) => {
+       assert_with_error (Tezos.get_now() >= s.deadline, "Too early!");
+       assert_with_error (Map.mem(Tezos.get_sender(), s.bids), "You won the auction");
+       assert_with_error (Tezos.get_sender() == s.topBidder, "Not the Top Bidder");
+       let receiver = Tezos.get_contract_with_error (Tezos.get_sender(), "Contract not found.") as contract<unit>;
+       let bid = Map.find(Tezos.get_sender(), s.bids);
+       let op = Tezos.transaction(unit,bid,receiver);
+       let newS = ({...s, bids: Map.remove(Tezos.get_sender(), s.bids)});
+       return [list ([op]), newS];
+};
+    
+const main = (a : action, s: storage) => {
+    return match (a, {
+        Bid : () => bid (s),
+        CollectTopBid : () => collectTopBid(s),
+        Claim : () => claim(s)
+    });
+};
