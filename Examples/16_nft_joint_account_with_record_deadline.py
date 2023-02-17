@@ -33,7 +33,7 @@ def main():
         def buyNFT(self, nft_address):
             assert (sp.sender == self.data.owner1) or (sp.sender == self.data.owner2)
             nft_contract = sp.contract(sp.unit, nft_address, entrypoint="buy").unwrap_some()
-            sp.transfer(sp.unit, sp.amount, nft_contract)
+            sp.transfer((), sp.amount, nft_contract)
     
         @sp.entrypoint
         def set_priceNFT(self, nft_address, new_price, deadline):
