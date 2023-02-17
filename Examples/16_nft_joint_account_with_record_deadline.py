@@ -3,6 +3,8 @@ import smartpy as sp
 @sp.module
 def main():
 
+    entrypoint_type : type = sp.record(new_price = sp.mutez, deadline = sp.timestamp)
+    
     class NftForSale(sp.Contract):
     
        def __init__(self, owner, metadata, price):
@@ -38,7 +40,7 @@ def main():
         @sp.entrypoint
         def set_priceNFT(self, nft_address, new_price, deadline):
             assert (sp.sender == self.data.owner1) or (sp.sender == self.data.owner2)
-            entrypoint_type = sp.record(new_price = sp.mutez, deadline = sp.timestamp)
+            
             nft_contract = sp.contract(entrypoint_type, nft_address, entrypoint="set_price").unwrap_some()
             sp.transfer(sp.record(new_price = new_price, deadline = deadline), sp.tez(0), nft_contract)
 
