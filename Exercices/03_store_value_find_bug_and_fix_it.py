@@ -4,23 +4,26 @@
 
 import smartpy as sp
 
-class StoreValue(sp.Contract):
-   def __init__(self):
-       self.init(storedValue = sp.int(24))
+@sp.module
+def main():
 
-   @sp.entry_point
-   def add(self, a):
-      self.data.storedValue += a
-
-   @sp.entry_point
-   def sub(self, b):
-       sp.set_type(b, sp.TNat)
-       self.data.storedValue -= b
+    class StoreValue(sp.Contract):
+       def __init__(self):
+           self.data.storedValue = sp.int(24)
+    
+       @sp.entrypoint
+       def add(self, a):
+          self.data.storedValue += a
+    
+       @sp.entrypoint
+       def sub(self, b):
+           sp.cast(b, sp.nat)
+           self.data.storedValue -= b
 
 @sp.add_test(name = "Testing")
 def test():
-   scenario = sp.test_scenario()
-   contract = StoreValue()
+   scenario = sp.test_scenario(main)
+   contract = main.StoreValue()
    scenario += contract
    contract.add(sp.nat(5))
    contract.sub(5)
