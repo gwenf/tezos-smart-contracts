@@ -1,39 +1,46 @@
 import smartpy as sp
 
-class NftForSale(sp.Contract):
+@sp.module
+def main():
 
-   def __init__(self, owner, metadata, price):
-       self.init(owner = owner, metadata = metadata, price= price, deadline = sp.timestamp(0))
-
-   @sp.entry_point
-   def set_price(self, new_price, deadline):
-       sp.verify(sp.sender == self.data.owner, "you cannot update the price")
-       self.data.price = new_price
-       self.data.deadline = deadline
-
-   @sp.entry_point
-   def buy(self):
-       sp.verify(sp.amount == self.data.price, "wrong price")
-       sp.verify(sp.now <= self.data.deadline)
-       sp.send(self.data.owner, self.data.price)
-       self.data.owner = sp.sender
+    class NftForSale(sp.Contract):
     
-class NFTJointAccount(sp.Contract):
-    def __init__(self, owner1, owner2):
-        self.init(owner1 = owner1, owner2 = owner2)
-
-    @sp.entry_point
-    def buyNFT(self, nft_address):
-        sp.verify( (sp.sender == self.data.owner1) | (sp.sender == self.data.owner2))
-        nft_contract = sp.contract(sp.TUnit, nft_address, entry_point="buy").open_some()
-        sp.transfer(sp.unit, sp.amount, nft_contract)
-
-    @sp.entry_point
-    def set_priceNFT(self, nft_address, new_price, deadline):
-        sp.verify((sp.sender == self.data.owner1) | (sp.sender == self.data.owner2))
-        entry_point_type = sp.TRecord(new_price = sp.TMutez, deadline = sp.TTimestamp)
-        nft_contract = sp.contract(entry_point_type, nft_address, entry_point="set_price").open_some()
-        sp.transfer(sp.record(new_price = new_price, deadline = deadline), sp.tez(0), nft_contract)
+       def __init__(self, owner, metadata, price):
+           self.data.owner = owner
+           self.data.metadata = metadata
+           self.data.price = price
+           self.data.deadline = sp.timestamp(0)
+    
+       @sp.entrypoint
+       def set_price(self, new_price, deadline):
+           assert sp.sender == self.data.owner, "you cannot update the price"
+           self.data.price = new_price
+           self.data.deadline = deadline
+    
+       @sp.entrypoint
+       def buy(self):
+           assert sp.amount == self.data.price, "wrong price"
+           assert sp.now <= self.data.deadline
+           sp.send(self.data.owner, self.data.price)
+           self.data.owner = sp.sender
+        
+    class NFTJointAccount(sp.Contract):
+        def __init__(self, owner1, owner2):
+            self.data.owner1 = owner1
+            self.data.owner2 = owner2
+    
+        @sp.entrypoint
+        def buyNFT(self, nft_address):
+            assert (sp.sender == self.data.owner1) or (sp.sender == self.data.owner2)
+            nft_contract = sp.contract(sp.unit, nft_address, entrypoint="buy").unwrap_some()
+            sp.transfer(sp.unit, sp.amount, nft_contract)
+    
+        @sp.entrypoint
+        def set_priceNFT(self, nft_address, new_price, deadline):
+            assert (sp.sender == self.data.owner1) or (sp.sender == self.data.owner2)
+            entrypoint_type = sp.record(new_price = sp.mutez, deadline = sp.timestamp)
+            nft_contract = sp.contract(entrypoint_type, nft_address, entrypoint="set_price").unwrap_some()
+            sp.transfer(sp.record(new_price = new_price, deadline = deadline), sp.tez(0), nft_contract)
 
 @sp.add_test(name='Testing set_price and buy')
 def test():
@@ -41,9 +48,9 @@ def test():
    bob = sp.test_account("bob").address
    eve = sp.test_account("eve").address
    dan = sp.test_account("dan").address
-   c1 = NftForSale(owner = alice, metadata = "Gwen's first NFT", price = sp.mutez(5000000))
-   c2 = NFTJointAccount(bob, eve)
-   scenario = sp.test_scenario()
+   c1 = main.NftForSale(owner = alice, metadata = "Gwen's first NFT", price = sp.mutez(5000000))
+   c2 = main.NFTJointAccount(bob, eve)
+   scenario = sp.test_scenario(main)
    scenario += c1
    scenario += c2
    scenario.h3(" Testing set_price entrypoint")
