@@ -1,24 +1,28 @@
 import smartpy as sp
 
-class StoreValue(sp.Contract):
-   def __init__(self, owner):
-       self.init(storedValue = 42, owner = owner)
+@sp.module
+def main():
 
-   @sp.entry_point
-   def add(self, a):
-      self.data.storedValue += a
+    class StoreValue(sp.Contract):
+       def __init__(self, owner):
+           self.data.storedValue = 42
+           self.data.owner = owner
+    
+       @sp.entrypoint
+       def add(self, a):
+          self.data.storedValue += a
+    
+       @sp.entrypoint
+       def reset(self):
+           assert sp.sender == self.data.owner, "only owner can reset"
+           self.data.storedValue = 0
 
-   @sp.entry_point
-   def reset(self):
-       sp.verify(sp.sender == self.data.owner, "only owner can reset")
-       self.data.storedValue = 0
-
-@sp.add_test(name="Testing")
+@sp.add_test(name="T
 def test():
    alice = sp.test_account("Alice").address
    bob = sp.test_account("Bob").address
-   contract = StoreValue(owner = alice)
-   scenario = sp.test_scenario()
+   contract = main.StoreValue(owner = alice)
+   scenario = sp.test_scenario(main)
    scenario += contract
    scenario.h3("Testing add entrypoint")
    contract.add(5)
@@ -27,5 +31,3 @@ def test():
    contract.reset().run(sender = bob, valid = False)
    contract.reset().run(sender = alice)
    scenario.verify(contract.data.storedValue == 0)
-   
-   
