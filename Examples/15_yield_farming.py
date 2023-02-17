@@ -37,7 +37,7 @@ def main():
         @sp.entrypoint
         def withdraw(self):
             assert sp.sender == self.data.lender
-            duration = sp.is_nat(sp.now - (self.data.deposit_date.add_seconds(self.data.ramp_up_duration))).unwrap_some()
+            duration = sp.is_nat(sp.now - (sp.add_seconds(self.data.deposit_date, self.data.ramp_up_duration))).unwrap_some()
             one_year= 365*24*3600
             one_year_yield = sp.mul(self.data.deposit_amount, self.data.annual_yield_rate)
             duration_yield = sp.split_tokens(one_year_yield, duration, one_year*100)
