@@ -1,32 +1,36 @@
 import smartpy as sp
 
-#specific address that does not exist in tezos
-nobody = sp.address("KT18amZmM5W7qDWVt2pH6uj7sCEd3kbzLrHT")
+@sp.module
+def main():
 
-class EndlessWall(sp.Contract):
-   def __init__(self, initialText):
-       self.init(wallText = initialText, nbCalls=0, owner = nobody)
-
-   @sp.entry_point
-   def write_message(self, message):
-       sp.verify((sp.len(message) <= 30) & (sp.len(message) >= 3), "invalid size message")
-       sp.verify(sp.amount == sp.tez(1), "incorrect amount")
-       #sp.verify(sp.now<sp.)
-       self.data.wallText += ", " + message + " forever"
-       self.data.nbCalls += 1
-
-   @sp.entry_point
-   def claim(self, requestedAmount):
-        sp.verify(sp.sender == self.data.owner, "not your money")
-        sp.send(self.data.owner, requestedAmount)  
+    #specific address that does not exist in tezos
+    nobody = sp.address("KT18amZmM5W7qDWVt2pH6uj7sCEd3kbzLrHT")
+    
+    class EndlessWall(sp.Contract):
+       def __init__(self, initialText):
+           self.data.wallText = initialText
+           self.data.nbCalls = 0
+           self.data.owner = nobody
+    
+       @sp.entrypoint
+       def write_message(self, message):
+           assert (sp.len(message) <= 30) & (sp.len(message) >= 3), "invalid size message"
+           assert sp.amount == sp.tez(1), "incorrect amount"
+           self.data.wallText += ", " + message + " forever"
+           self.data.nbCalls += 1
+    
+       @sp.entrypoint
+       def claim(self, requestedAmount):
+            assert sp.sender == self.data.owner, "not your money"
+            sp.send(self.data.owner, requestedAmount)  
   
 @sp.add_test(name = "add my name")
 def test():
    alice=sp.test_account("Alice").address
    bob=sp.test_account("Bob").address
    eve=sp.test_account("Eve").address
-   c1 = EndlessWall(initialText = "Axel on Tezos forever")
-   scenario = sp.test_scenario()
+   c1 = main.EndlessWall(initialText = "Axel on Tezos forever")
+   scenario = sp.test_scenario(main)
    scenario += c1
    scenario.h3(" Testing write_message is ok ")
     #scenario write_message ok
