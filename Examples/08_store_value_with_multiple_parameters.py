@@ -1,24 +1,28 @@
 import smartpy as sp
 
-class StoreValue(sp.Contract):
+@sp.module
+def main():
 
-    def __init__(self, minValue, maxValue):
-        self.init(minValue = minValue, maxValue = maxValue)
-
-    @sp.entry_point
-    def set(self, newMinValue, newMaxValue):
+    class StoreValue(sp.Contract):
+        
+        def __init__(self, minValue, maxValue):
+            self.data.minValue = minValue
+            self.data.maxValue = maxValue
+    
+        @sp.entrypoint
+        def set(self, newMinValue, newMaxValue):
             self.data.minValue = newMinValue
             self.data.maxValue = newMaxValue
-            
-    @sp.entry_point
-    def addNumber(self, a):
+                
+        @sp.entrypoint
+        def addNumber(self, a):
             self.data.minValue += a
             self.data.maxValue += a
             
 @sp.add_test(name = "testing")
 def test():
-        c1 = StoreValue(minValue = 0, maxValue = 5)
-        scenario = sp.test_scenario()
+        c1 = main.StoreValue(minValue = 0, maxValue = 5)
+        scenario = sp.test_scenario(main)
         scenario += c1
         scenario.h3(" Setting Min and Max")
         c1.set(newMinValue = 5, newMaxValue = 10)
