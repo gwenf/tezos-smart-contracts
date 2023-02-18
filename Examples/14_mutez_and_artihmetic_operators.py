@@ -3,18 +3,20 @@ import smartpy as sp
 @sp.module
 def main():
 
+    def nat_to_tez(x): return sp.mul(sp.cast(x,sp.nat), sp.tez(1))
+        
     class ComputingTez(sp.Contract):
         def __init__(self):
             self.data.financial_value = sp.mutez(1000000)
         
         @sp.entrypoint
         def add(self, x, y):
-            self.data.financial_value = sp.utils.nat_to_tez(x) + sp.utils.nat_to_tez(y)
+            self.data.financial_value = nat_to_tez(x) + nat_to_tez(y)
         
         
         @sp.entrypoint
         def sub(self, x, y):
-            self.data.financial_value = sp.utils.nat_to_tez(x) - sp.utils.nat_to_tez(y)
+            self.data.financial_value = nat_to_tez(x) - nat_to_tez(y)
             #WARNING sp.tez(<natural number>), sp.mutez(<natural number>): No negative value
        
         @sp.entrypoint
@@ -24,7 +26,7 @@ def main():
             
         @sp.entrypoint
         def divide(self, x, y):
-            self.data.financial_value = sp.fst(sp.ediv(x, y).open_some())
+            self.data.financial_value = sp.fst(sp.ediv(x, y).unwrap_some())
             #x being of type mutez and y of type nat
             #it returns and option of a pair and you can use open_some() to open the option
             # and then sp.fst to get the first element of the pair and sp.snd to get the rest
