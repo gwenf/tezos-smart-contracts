@@ -25,13 +25,13 @@ def test():
    c1 = main.EndlessWall(initialText = "Axel on Tezos forever", owner = alice)
    scenario = sp.test_scenario(main)
    scenario += c1
-   scenario += c1.write_message("Ana & Jack").run(sender = eve)
-   scenario += c1.write_message("freeCodeCamp").run(sender = bob)
+   c1.write_message("Ana & Jack").run(sender = eve)
+   c1.write_message("freeCodeCamp").run(sender = bob)
    scenario.verify(c1.data.wallText == "Axel on Tezos forever, Ana & Jack forever, freeCodeCamp forever")
-   scenario += c1.write_message("freeCodeCamp").run(sender = bob, valid = False, exception="Do not spam the wall")
-   scenario += c1.write_message("this message is 31 letters long").run(sender = alice, valid = False)
+   c1.write_message("freeCodeCamp").run(sender = bob, valid = False, exception="Do not spam the wall")
+   c1.write_message("this message is 31 letters long").run(sender = alice, valid = False)
    #by default a transaction is valid, no need to add .run(valid = True) after testing a valid call
-   scenario += c1.write_message("LLL").run(sender = alice)
-   scenario += c1.write_message("this message is 30 characters ").run(sender = eve)
+   c1.write_message("LLL").run(sender = alice)
+   c1.write_message("this message is 30 characters ").run(sender = eve)
    scenario.verify(c1.data.nbCalls == 4)
     
