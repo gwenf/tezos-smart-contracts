@@ -7,12 +7,11 @@ def main():
         def __init__(self, fee_rate, admin ):
             self.data.fee_rate= fee_rate
             self.data.admin = admin
-            self.data.tokens = sp.big_map(
-                {},
-                tkey = sp.pair(sp.contract, sp.int),
-                tvalue = sp.record
+            self.data.tokens = sp.cast(
+                sp.big_map({}),
+                sp.big_map[sp.pair(sp.contract, sp.int), sp.record]
             )
-            self.data.ledger = sp.big_map({}, tkey = sp.address, tvalue = sp.mutez)                         
+            self.data.ledger = sp.cast(sp.big_map({}), sp.big_map[sp.address, sp.mutez])                         
        
         def add_to_ledger(self, user, amount):
             self.data.ledger[user] = self.data.ledger.get(user, sp.tez(0)) + amount
