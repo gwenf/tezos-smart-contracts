@@ -16,9 +16,7 @@ def main():
      
         @sp.entrypoint
         def write_message(self, text, timestamp):
-           self.data.messages = sp.update_map(self.data.messages,
-                                              sp.sender,
-                                              sp.Some(sp.record(text = text, timestamp = timestamp)))
+           self.data.messages[sp.sender] = sp.record(text = text, timestamp = timestamp)
     
        
 @sp.add_test(name="testing truly endless wall")
