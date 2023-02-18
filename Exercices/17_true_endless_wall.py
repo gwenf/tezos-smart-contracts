@@ -5,17 +5,20 @@ def main():
 
     class TrulyEndlessWall(sp.Contract):
         def __init__(self, owner):
-            self.data.messages = sp.big_map(
-                    {},
-                    tkey = sp.address,
-                    tvalue = sp.record(text = sp.string, timestamp = sp.timestamp)
-                )
+            self.data.messages = sp.cast(sp.big_map({}),
+                                         sp.big_map[sp.address,
+                                                    sp.record(text = sp.string,
+                                                              timestamp = sp.timestamp)
+                                         ]
+                                        )
             self.data.owner = owner
            
      
         @sp.entrypoint
         def write_message(self, text, timestamp):
-           self.data.messages = sp.update_map(messages, sp.sender, sp.record(text = text, timestamp = timestamp))
+           self.data.messages = sp.update_map(self.data.messages,
+                                              sp.sender,
+                                              sp.Some(sp.record(text = text, timestamp = timestamp)))
     
        
 @sp.add_test(name="testing truly endless wall")
