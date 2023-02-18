@@ -19,7 +19,7 @@ def main():
        @sp.entrypoint
        def buy(self):
            assert sp.amount == self.data.price
-           assert sp.now.add_days(5) - self.data.buy_date >= 5  , "5 days between each buy"
+           assert sp.add_days(sp.now, 5) - self.data.buy_date >= 5  , "5 days between each buy"
            sp.send(self.data.owner, self.data.price)
            self.data.owner = sp.sender
            self.data.buy_date = sp.now
