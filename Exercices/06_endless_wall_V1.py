@@ -17,6 +17,6 @@ def test():
    scenario = sp.test_scenario(main)
    scenario += c1
    scenario.h3("Testing write_message entrypoint")
-   scenario += c1.write_message("Ana & Jack")
-   scenario += c1.write_message("freeCodeCamp")
+   c1.write_message("Ana & Jack")
+   c1.write_message("freeCodeCamp")
    #check the expected output
