@@ -13,7 +13,7 @@ def main():
        @sp.entrypoint
        def write_message(self, message):
            assert (sp.len(message) <= 30) and (sp.len(message) >= 3), "invalid size message"
-           assert sp.amount == sp.mutez(1), "incorrect amount"
+           assert sp.amount == sp.tez(1), "incorrect amount"
            assert sp.now <= self.data.deadline, "After deadline"
            self.data.wallText += ", " + message + " forever"
            self.data.nbCalls += 1
@@ -33,8 +33,8 @@ def test():
     sc += c1
     sc.h3(" Testing write_message is ok ")
     #sc write_message ok
-    c1.write_message("Ana & Jack").run(sender = eve, amount = sp.tez(1), now = sp.now )
-    c1.write_message("freeCodeCamp").run(sender = bob, amount = sp.tez(1), now = sp.now )
+    c1.write_message("Ana & Jack").run(sender = eve, amount = sp.tez(1), now = sp.timestamp(0) )
+    c1.write_message("freeCodeCamp").run(sender = bob, amount = sp.tez(1), now = sp.timestamp(0) )
     sc.verify(c1.data.wallText == "Axel on Tezos forever, Ana & Jack forever, freeCodeCamp forever")
     sc.h3(" Checking calls fail due to invalid size message ")
     #checking write_message fails for size message
