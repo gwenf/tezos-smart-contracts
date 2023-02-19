@@ -14,7 +14,7 @@ def main():
         @sp.entrypoint
         def buy(self):
            assert sp.amount == self.data.price
-           owner_share = sp.split_tokens(self.data.price, sp.abs(100 - self.data.author_rate), 100)
+           owner_share = sp.split_tokens(self.data.price, abs(100 - self.data.author_rate), 100)
            sp.send(self.data.owner, owner_share)
            self.data.price += sp.split_tokens(sp.amount, 10, 100)
            self.data.owner = sp.sender
