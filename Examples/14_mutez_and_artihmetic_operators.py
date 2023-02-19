@@ -3,8 +3,6 @@ import smartpy as sp
 @sp.module
 def main():
 
-    def nat_to_tez(x): return sp.mul(sp.cast(x,sp.nat), sp.tez(1))
-        
     class ComputingTez(sp.Contract):
         def __init__(self):
             self.data.financial_value = sp.mutez(1000000)
