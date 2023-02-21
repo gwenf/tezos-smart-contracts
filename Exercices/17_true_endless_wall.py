@@ -2,7 +2,6 @@ import smartpy as sp
 
 @sp.module
 def main():
-
     class TrulyEndlessWall(sp.Contract):
         def __init__(self, owner):
             self.data.messages = sp.cast(sp.big_map({}),
