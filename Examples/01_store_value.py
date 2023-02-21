@@ -1,7 +1,8 @@
 import smartpy as sp
 
-class StoreValue(sp.Contract):
-    def __init__(self):
-        self.init(
-            storedValue = 42
-        )
+@sp.module
+def main():
+
+    class StoreValue(sp.Contract):
+        def __init__(self):
+            self.data.storedValue = 42

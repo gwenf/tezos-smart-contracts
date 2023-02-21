@@ -1,35 +1,40 @@
 import smartpy as sp
 
-class EndlessWall(sp.Contract):
-   def __init__(self, initialText, owner, deadline):
-               self.init(wallText = initialText, nbCalls=0, owner = owner, deadline = deadline)
+@sp.module
+def main():
 
-   @sp.entry_point
-   def write_message(self, message):
-       sp.verify((sp.len(message) <= 30) & (sp.len(message) >= 3), "invalid size message")
-       sp.verify(sp.amount == sp.tez(1), "incorrect amount")
-       sp.verify(sp.now <= self.data.deadline, "After deadline")
-       #sp.verify(sp.now<sp.)
-       self.data.wallText += ", " + message + " forever"
-       self.data.nbCalls += 1
-
-   @sp.entry_point
-   def claim(self, requestedAmount):
-        sp.verify(sp.sender == self.data.owner, "not your money")
-        sp.send(self.data.owner, requestedAmount)     
+    class EndlessWall(sp.Contract):
+       def __init__(self, initialText, owner, deadline):
+           self.data.wallText = initialText
+           self.data.nbCalls = 0
+           self.data.owner = owner
+           self.data.deadline = deadline
+    
+       @sp.entrypoint
+       def write_message(self, message):
+           assert (sp.len(message) <= 30) and (sp.len(message) >= 3), "invalid size message"
+           assert sp.amount == sp.tez(1), "incorrect amount"
+           assert sp.now <= self.data.deadline, "After deadline"
+           self.data.wallText += ", " + message + " forever"
+           self.data.nbCalls += 1
+    
+       @sp.entrypoint
+       def claim(self, requestedAmount):
+            assert sp.sender == self.data.owner, "not your money"
+            sp.send(self.data.owner, requestedAmount)     
   
 @sp.add_test(name = "add my name")
 def test():
     alice=sp.test_account("Alice").address
     bob=sp.test_account("Bob").address
     eve=sp.test_account("Eve").address
-    c1 = EndlessWall(initialText = "Axel on Tezos forever", owner=alice, deadline = sp.timestamp_from_utc(2025, 12, 31, 23, 59, 59))
-    sc = sp.test_scenario()
+    c1 = main.EndlessWall(initialText = "Axel on Tezos forever", owner=alice, deadline = sp.timestamp_from_utc(2025, 12, 31, 23, 59, 59))
+    sc = sp.test_scenario(main)
     sc += c1
     sc.h3(" Testing write_message is ok ")
     #sc write_message ok
-    c1.write_message("Ana & Jack").run(sender = eve, amount = sp.tez(1), now = sp.now )
-    c1.write_message("freeCodeCamp").run(sender = bob, amount = sp.tez(1), now = sp.now )
+    c1.write_message("Ana & Jack").run(sender = eve, amount = sp.tez(1), now = sp.timestamp(0) )
+    c1.write_message("freeCodeCamp").run(sender = bob, amount = sp.tez(1), now = sp.timestamp(0) )
     sc.verify(c1.data.wallText == "Axel on Tezos forever, Ana & Jack forever, freeCodeCamp forever")
     sc.h3(" Checking calls fail due to invalid size message ")
     #checking write_message fails for size message
