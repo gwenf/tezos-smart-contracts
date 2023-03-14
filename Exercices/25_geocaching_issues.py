@@ -6,9 +6,9 @@ def main():
     
         def __init__(self, owner, deadline):
             self.data.treasures = sp.big_map({})
-            self.data.scorePerUser = sp.big_map({})
+            self.data.scorePerPlayer = sp.big_map({})
             self.data.currentWinner = owner
-            self.data.scorePerUser[owner] = 0
+            self.data.scorePerPlayer[owner] = 0
             self.data.owner = owner
             self.data.deadline = deadline
             self.data.nbTreasures = 0
@@ -27,17 +27,17 @@ def main():
             assert not treasure.found
             assert sp.blake2b(password) == treasure.hash
             self.data.treasures[id].found = True
-            if not self.data.scorePerUser.contains(sp.sender):
-                self.data.scorePerUser[sp.sender] = 0
-            self.data.scorePerUser[sp.sender] += 1
-            if self.data.scorePerUser[sp.sender] > self.data.scorePerUser[self.data.currentWinner]:
+            if not self.data.scorePerPlayer.contains(sp.sender):
+                self.data.scorePerPlayer[sp.sender] = 0
+            self.data.scorePerPlayer[sp.sender] += 1
+            if self.data.scorePerPlayer[sp.sender] > self.data.scorePerPlayer[self.data.currentWinner]:
                 self.data.currentWinner = sp.sender
 
         @sp.entrypoint
-        def award_prize(self):
+        def claim_prize(self):
             assert sp.now >= self.data.deadline
-            assert sp.sender == self.data.owner
-            sp.send(self.data.currentWinner, sp.balance)
+            assert sp.sender == self.data.currentWinner
+            sp.send(sp.sender, sp.balance)
                    
 @sp.add_test(name='Geocaching test')
 def test():
@@ -54,11 +54,8 @@ def test():
     geocaching.discover_treasure(id = 2, password = sp.pack("false password")).run(sender = bob, now = sp.timestamp(100), valid = False)
     geocaching.discover_treasure(id = 2, password = sp.pack("secret password 2")).run(sender = carl, now = sp.timestamp(100))
     geocaching.discover_treasure(id = 3, password = sp.pack("secret password 3")).run(sender = carl, now = sp.timestamp(200))
-    geocaching.award_prize().run(sender = alice, now = sp.timestamp(100), valid = False)
-    geocaching.award_prize().run(sender = carl, now = sp.timestamp(1000), valid = False)
-    geocaching.award_prize().run(sender = alice, now = sp.timestamp(1000))
-
-    
-
+    geocaching.claim_prize().run(sender = carl, now = sp.timestamp(100), valid = False)
+    geocaching.claim_prize().run(sender = bob, now = sp.timestamp(1000), valid = False)
+    geocaching.claim_prize().run(sender = carl, now = sp.timestamp(1000))
 
         
