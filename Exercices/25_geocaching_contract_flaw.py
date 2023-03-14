@@ -34,10 +34,10 @@ def main():
                 self.data.currentWinner = sp.sender
 
         @sp.entrypoint
-        def claim_prize(self):
+        def award_prize(self):
             assert sp.now >= self.data.deadline
-            assert sp.sender == self.data.currentWinner
-            sp.send(sp.sender, sp.balance)
+            assert sp.sender == self.data.owner
+            sp.send(self.data.currentWinner, sp.balance)
                    
 @sp.add_test(name='Geocaching test')
 def test():
@@ -54,13 +54,9 @@ def test():
     geocaching.discover_treasure(id = 2, password = sp.pack("false password")).run(sender = bob, now = sp.timestamp(100), valid = False)
     geocaching.discover_treasure(id = 2, password = sp.pack("secret password 2")).run(sender = carl, now = sp.timestamp(100))
     geocaching.discover_treasure(id = 3, password = sp.pack("secret password 3")).run(sender = carl, now = sp.timestamp(200))
-    geocaching.claim_prize().run(sender = carl, now = sp.timestamp(100), valid = False)
-    geocaching.claim_prize().run(sender = bob, now = sp.timestamp(1000), valid = False)
-    geocaching.claim_prize().run(sender = carl, now = sp.timestamp(1000))
-
-    
-
-
+    geocaching.award_prize().run(sender = alice, now = sp.timestamp(100), valid = False)
+    geocaching.award_prize().run(sender = carl, now = sp.timestamp(1000), valid = False)
+    geocaching.award_prize().run(sender = alice, now = sp.timestamp(1000))
         
 
         
