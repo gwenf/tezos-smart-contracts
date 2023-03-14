@@ -39,14 +39,3 @@ def test():
     c1.sub(x = 5, y = 3)
     c1.multiply(x =  sp.tez(5), y = sp.nat(3))
     c1.divide(x =  sp.tez(5), y = sp.nat(3))
-
-
-@sp.add_test(name="testing operations")
-def test():
-    c1 = main.ComputingTez()
-    sc = sp.test_scenario(main)
-    sc += c1
-    c1.add(x = 5, y = 3)
-    c1.sub(x = 5, y = 3)
-    c1.multiply(x =  sp.tez(5), y = sp.nat(3))
-    c1.divide(x =  sp.tez(5), y = sp.nat(3))
