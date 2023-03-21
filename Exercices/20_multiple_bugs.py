@@ -9,7 +9,7 @@ def main():
             self.data.tokens = {}
             self.data.tokenID = 1
 
-        @sp.entry_point
+        @sp.entrypoint
         def mint(self, metadata):
             self.data.tokens[self.data.tokenID] = sp.record(metadata = metadata, owner = sp.sender)
             self.data.tokenID += 1
