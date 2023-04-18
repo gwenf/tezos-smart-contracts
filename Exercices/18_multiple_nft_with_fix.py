@@ -39,14 +39,6 @@ def main():
             sp.transfer((tokenId, sp.sender), sp.tez(0), myContract)
             del self.data.tokens[(contract, token_id)]
     
-        '''@sp.entry_point
-        def buy(tokenID)
-        #Check that the amount transferred is the price
-        #Transfer token ownership to the buyer
-        #Add admin fee to admin account in the ledger
-        #Add the rest to the seller account in the ledger
-        #Delete tokens[(contract,tokenID)]'''
-    
     
         
         @sp.entry_point
