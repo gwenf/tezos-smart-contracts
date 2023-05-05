@@ -60,10 +60,10 @@ def main():
        
 @sp.add_test(name="testing truly endless wall")
 def test():
-    alice = sp.test_account("Alice").address
-    bob = sp.test_account("Bob").address
-    eve = sp.test_account("Eve").address
-    axel = sp.test_account("Axel").address
+    alice = sp.test_account("Alice")
+    bob = sp.test_account("Bob")
+    eve = sp.test_account("Eve")
+    axel = sp.test_account("Axel")
     scenario = sp.test_scenario(main)
     marketplace = main.Marketplace()
     scenario += marketplace
