@@ -5,4 +5,4 @@ def main():
 
     class StoreValue(sp.Contract):
         def __init__(self):
-            self.data.storedValue = 42
+            self.data.stored_value = 42
