@@ -1,5 +1,4 @@
 import smartpy as sp
-
 @sp.module
 def main():
 
