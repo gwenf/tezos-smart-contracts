@@ -5,8 +5,8 @@ def main():
 
     class FlipValue(sp.Contract):
         def __init__(self):
-            self.data.bestDigit = 0
+            self.data.best_digit = 0
         
         @sp.entrypoint
         def flip(self):
-            self.data.bestDigit = 1 - self.data.bestDigit
+            self.data.best_digit = 1 - self.data.best_digit
