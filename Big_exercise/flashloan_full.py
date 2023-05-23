@@ -212,7 +212,6 @@ def main():
             assert sp.amount == self.data.membership_price
             self.data.members.add(sp.sender)
             sp.send(self.data.owner, sp.amount)
-            self.data.members.add(sp.sender)
 
         @sp.entrypoint
         def join_with_tokens(self, nbTokens):
