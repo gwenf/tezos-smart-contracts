@@ -1,3 +1,8 @@
+import smartpy as sp
+
+@sp.module
+def main():
+    
     class LiquidityPool(sp.Contract):
         def __init__(self, owner, ledger):
             self.data.ledger = ledger
