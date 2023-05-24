@@ -9,16 +9,16 @@ def main():
 
     class StoreValue(sp.Contract):
        def __init__(self):
-           self.data.storedValue = sp.int(24)
+           self.data.store_value = sp.int(24)
     
        @sp.entrypoint
        def add(self, a):
-          self.data.storedValue += a
+          self.data.store_value += a
     
        @sp.entrypoint
        def sub(self, b):
            sp.cast(b, sp.nat)
-           self.data.storedValue -= b
+           self.data.store_value -= b
 
 @sp.add_test(name = "Testing")
 def test():
