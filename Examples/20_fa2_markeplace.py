@@ -25,7 +25,7 @@ def main():
             self.data.tokens[self.data.nextTokenID] = sp.record(owner = sp.sender, metadata = metadata, operators = sp.set())
             self.data.nextTokenID += 1
 
-        @sp.entry_point
+        @sp.entrypoint
         def balance_of(self, callback, requests):
             sp.cast(requests, sp.list[sp.record(owner = sp.address, token_id = sp.nat)])
             result = []
