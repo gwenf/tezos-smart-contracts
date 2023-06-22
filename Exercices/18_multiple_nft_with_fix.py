@@ -17,33 +17,33 @@ def main():
             self.data.ledger[user] = self.data.ledger.get(user, sp.tez(0)) + amount
     
         @sp.entry_point
-        def addToMarketplace(self, contract, tokenID, price):
+        def add_to_marketplace(self, contract, token_id, price):
             #Check that the caller is the owner of the token
-            owner = sp.view("getOwner",contract, tokenID, t = sp.TAddress)
+            owner = sp.view("getOwner",contract, token_id, t = sp.TAddress)
             assert owner == sp.sender
-            #Add a contract/tokenID entry to tokens big-map, and store caller as the seller, and the price
-            self.data.tokens[(contract, tokenID)] = sp.record(price=price, owner=sp.sender)
+            #Add a contract/token_id entry to tokens big-map, and store caller as the seller, and the price
+            self.data.tokens[(contract, token_id)] = sp.record(price=price, owner=sp.sender)
             #Transfer token ownership to the marketplace
             #Transfer token ownership to the marketplace
-            entryType = sp.TRecord(sp.TNat, sp.TAddress)
-            myContract = sp.contract(entryType, contract, 'transfer').open_some()
-            sp.transfer((tokenId, ), sp.tez(0), myContract)
+            entry_type = sp.TRecord(sp.TNat, sp.TAddress)
+            my_contract = sp.contract(entry_type, contract, 'transfer').open_some()
+            sp.transfer((token_id, ), sp.tez(0), my_contract)
            
     
         @sp.entry_point
-        def removeFromMarketplace(self, contract, tokenID):
+        def removeFromMarketplace(self, contract, token_id):
             #Check that the caller is the seller
             assert sp.sender == self.data.tokens[(contract, token_id)].owner, 'not your property'
             #Transfer token ownership back to the seller
-            myContract = sp.contract(entryType, contract, 'transfer').unwrap_some()
-            sp.transfer((tokenId, sp.sender), sp.tez(0), myContract)
+            my_contract = sp.contract(entry_type, contract, 'transfer').unwrap_some()
+            sp.transfer((token_id, sp.sender), sp.tez(0), my_contract)
             del self.data.tokens[(contract, token_id)]
     
     
         
         @sp.entry_point
         def buy(self, token_id):
-            #Checks that tokens[tokenID] exists, call it token
+            #Checks that tokens[token_id] exists, call it token
             assert self.data.tokens.contains(token_id)
             #Check that the amount transferred is equal to the price of the token
             assert sp.amount == self.data.tokens[token_id].price
