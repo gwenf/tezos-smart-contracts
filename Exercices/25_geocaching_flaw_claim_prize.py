@@ -6,19 +6,19 @@ def main():
     
         def __init__(self, owner, deadline):
             self.data.treasures = sp.big_map({})
-            self.data.scorePerPlayer = sp.big_map({})
-            self.data.currentWinner = owner
-            self.data.scorePerPlayer[owner] = 0
+            self.data.score_per_player = sp.big_map({})
+            self.data.current_winner = owner
+            self.data.score_per_player[owner] = 0
             self.data.owner = owner
             self.data.deadline = deadline
-            self.data.nbTreasures = 0
+            self.data.nb_treasures = 0
 
         @sp.entrypoint
         def create_treasure(self, password_hash):
             assert sp.now < self.data.deadline
             assert sp.sender == self.data.owner
-            self.data.nbTreasures += 1
-            self.data.treasures[self.data.nbTreasures] = sp.record(hash = password_hash, found = False)
+            self.data.nb_treasures += 1
+            self.data.treasures[self.data.nb_treasures] = sp.record(hash = password_hash, found = False)
 
         @sp.entrypoint
         def discover_treasure(self, id, password):
@@ -27,16 +27,16 @@ def main():
             assert not treasure.found
             assert sp.blake2b(password) == treasure.hash
             self.data.treasures[id].found = True
-            if not self.data.scorePerPlayer.contains(sp.sender):
-                self.data.scorePerPlayer[sp.sender] = 0
-            self.data.scorePerPlayer[sp.sender] += 1
-            if self.data.scorePerPlayer[sp.sender] > self.data.scorePerPlayer[self.data.currentWinner]:
-                self.data.currentWinner = sp.sender
+            if not self.data.score_per_player.contains(sp.sender):
+                self.data.score_per_player[sp.sender] = 0
+            self.data.score_per_player[sp.sender] += 1
+            if self.data.score_per_player[sp.sender] > self.data.score_per_player[self.data.current_winner]:
+                self.data.current_winner = sp.sender
 
         @sp.entrypoint
         def claim_prize(self):
             assert sp.now >= self.data.deadline
-            assert sp.sender == self.data.currentWinner
+            assert sp.sender == self.data.current_winner
             sp.send(sp.sender, sp.balance)
                    
 @sp.add_test(name='Geocaching test')
