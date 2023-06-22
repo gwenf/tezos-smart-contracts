@@ -16,14 +16,14 @@ def main():
         @sp.entrypoint
         def withdraw(self):
             assert sp.sender == self.data.owner
-            remainingDeposits = []
+            remaining_deposits = []
             total = sp.tez(0)
             for deposit in self.data.deposits:
                 if deposit.deadline <= sp.now:
                     total += deposit.amount
                 else:
-                    remainingDeposits = sp.cons(deposit, remainingDeposits)
-            self.data.deposits = remainingDeposits
+                    remaining_deposits = sp.cons(deposit, remaining_deposits)
+            self.data.deposits = remaining_deposits
             sp.send(sp.sender, total)
                    
 
@@ -33,13 +33,13 @@ def test():
     bob = sp.test_account("bob").address
     carl = sp.test_account("carl").address
     scenario = sp.test_scenario(main)
-    timeSafeContract = main.TimeSafe(alice)
-    scenario += timeSafeContract
-    timeSafeContract.deposit(sp.timestamp(100)).run(sender = bob, amount = sp.tez(10))
-    timeSafeContract.deposit(sp.timestamp(200)).run(sender = carl, amount = sp.tez(20))
-    timeSafeContract.withdraw().run(sender = alice, now = sp.timestamp(0))
-    scenario.verify(timeSafeContract.balance == sp.tez(30))
-    timeSafeContract.withdraw().run(sender = alice, now = sp.timestamp(100))
-    scenario.verify(timeSafeContract.balance == sp.tez(20))
-    timeSafeContract.withdraw().run(sender = alice, now = sp.timestamp(2000))
-    scenario.verify(timeSafeContract.balance == sp.tez(0))
+    time_safe_contract = main.TimeSafe(alice)
+    scenario += time_safe_contract
+    time_safe_contract.deposit(sp.timestamp(100)).run(sender = bob, amount = sp.tez(10))
+    time_safe_contract.deposit(sp.timestamp(200)).run(sender = carl, amount = sp.tez(20))
+    time_safe_contract.withdraw().run(sender = alice, now = sp.timestamp(0))
+    scenario.verify(time_safe_contract.balance == sp.tez(30))
+    time_safe_contract.withdraw().run(sender = alice, now = sp.timestamp(100))
+    scenario.verify(time_safe_contract.balance == sp.tez(20))
+    time_safe_contract.withdraw().run(sender = alice, now = sp.timestamp(2000))
+    scenario.verify(time_safe_contract.balance == sp.tez(0))
