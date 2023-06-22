@@ -14,12 +14,12 @@ def main():
     
     
         @sp.entrypoint
-        def owner_withdraw(self, requestedAmount):
+        def owner_withdraw(self, requested_amount):
             assert sp.sender == self.data.owner
             one_year_yield = sp.split_tokens(self.data.deposit_amount, self.data.annual_yield_rate, 100)
             reserve = self.data.deposit_amount + one_year_yield
-            assert sp.balance - requestedAmount >= reserve
-            sp.send(sp.sender, requestedAmount)
+            assert sp.balance - requested_amount >= reserve
+            sp.send(sp.sender, requested_amount)
             
         @sp.entrypoint
         def set_delegate(self, delegate_option):
