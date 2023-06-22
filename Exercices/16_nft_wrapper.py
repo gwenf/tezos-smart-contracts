@@ -17,19 +17,19 @@ def main():
            self.data.owner = sp.sender
         
     class NftWrapperContract(sp.Contract):
-        def __init__(self, allowSales, owner, price):
-            self.data.allowSales = allowSales
+        def __init__(self, allow_sales, owner, price):
+            self.data.allow_sales = allow_sales
             self.data.price = price
             self.data.owner_wrapper = owner
     
         @sp.entrypoint
-        def buyNFT(self, nft_address):
+        def buy_nft(self, nft_address):
             assert sp.sender == self.data.owner_wrapper
             nft_contract = sp.contract(sp.unit, nft_address, entrypoint="buy").unwrap_some()
             sp.transfer((), sp.amount, nft_contract)
             
         @sp.entrypoint
-        def setPrice(self, new_price):
+        def set_price(self, new_price):
             assert sp.sender == self.data.owner_wrapper
             self.data.price = new_price
     
@@ -40,13 +40,13 @@ def main():
             self.data.owner_wrapper = sp.sender
             
         @sp.entrypoint
-        def setAllowSale(self, new_boolean):
+        def set_allow_sale(self, new_boolean):
             assert sp.sender == self.data.owner_wrapper
-            self.data.allowSales = new_boolean
+            self.data.allow_sales = new_boolean
     
         @sp.entrypoint
         def default(self):
-            assert self.data.allowSales
+            assert self.data.allow_sales
 
 @sp.add_test(name="test Wrapped Nft")
 def test():
@@ -55,7 +55,7 @@ def test():
    eve = sp.test_account("eve").address
    dan = sp.test_account("dan").address
    c1 = main.NftForSale(owner = alice, metadata = "Gwen's first NFT", price = sp.mutez(5000000))
-   c2 = main.NftWrapperContract(allowSales = sp.bool(True), price = sp.mutez(5000000), owner = bob)
+   c2 = main.NftWrapperContract(allow_sales = sp.bool(True), price = sp.mutez(5000000), owner = bob)
    scenario = sp.test_scenario(main)
    scenario +=c1
    scenario +=c2
@@ -64,22 +64,22 @@ def test():
    scenario.verify(c1.data.price == sp.mutez(5500000))
    c1.buy().run(sender = alice, amount = sp.mutez(5500000))
    scenario.h3("testing buy NFT with Wrapper")
-   c2.buyNFT(c1.address).run(sender = bob, amount=sp.mutez(6050000))
+   c2.buy_nft(c1.address).run(sender = bob, amount=sp.mutez(6050000))
    scenario.verify(c1.data.price == sp.mutez(6655000) )
    scenario.verify(c1.data.owner == c2.address)
-   scenario.h3("testing allowSales")
-   c2.setAllowSale(False).run(sender = eve, valid = False)
-   c2.setAllowSale(False).run(sender = bob)
+   scenario.h3("testing allow_sales")
+   c2.set_allow_sale(False).run(sender = eve, valid = False)
+   c2.set_allow_sale(False).run(sender = bob)
    scenario.verify(c1.data.price == sp.mutez(6655000))
    c1.buy().run(sender = dan, amount = sp.mutez(6655000), valid = False)
-   scenario.h3("testing setPrice NFT Wrapper")
-   c2.setPrice(sp.tez(5)).run(sender = eve, valid = False)
-   c2.setPrice(sp.tez(5)).run(sender = bob)
+   scenario.h3("testing set_price NFT Wrapper")
+   c2.set_price(sp.tez(5)).run(sender = eve, valid = False)
+   c2.set_price(sp.tez(5)).run(sender = bob)
    c2.buy().run(sender = alice, amount = sp.tez(5))
    scenario.verify(c2.data.price == sp.tez(5))
    scenario.verify(c2.data.owner_wrapper == alice)
    scenario.h3("trying to buy nft from NFTforSale while not possible") 
    scenario.h3("buying NftWrapper i.e. buying NFT at nftwrapper set_price()")
-   c2.setAllowSale(True).run(sender = alice)
+   c2.set_allow_sale(True).run(sender = alice)
    c1.buy().run(sender = dan, amount = sp.mutez(6655000))
    scenario.verify(c1.data.owner == dan)
