@@ -16,10 +16,10 @@ def main():
             self.data.counter += 1
 
         @sp.entrypoint
-        def withdraw(self, requestedItems):
+        def withdraw(self, requested_items):
             assert sp.sender == self.data.owner
             total = sp.tez(0)
-            for key in requestedItems:
+            for key in requested_items:
                 if self.data.deposits.contains(key):
                     deposit = self.data.deposits[key]
                     if deposit.deadline <= sp.now:
@@ -34,13 +34,13 @@ def test():
     bob = sp.test_account("bob").address
     carl = sp.test_account("carl").address
     scenario = sp.test_scenario(main)
-    timeSafeContract = main.TimeSafe(alice)
-    scenario += timeSafeContract
-    timeSafeContract.deposit(sp.timestamp(100)).run(sender = bob, amount = sp.tez(10))
-    timeSafeContract.deposit(sp.timestamp(200)).run(sender = carl, amount = sp.tez(20))
-    timeSafeContract.withdraw([0,1]).run(sender = alice, now = sp.timestamp(0))
-    scenario.verify(timeSafeContract.balance == sp.tez(30))
-    timeSafeContract.withdraw([0,1]).run(sender = alice, now = sp.timestamp(100))
-    scenario.verify(timeSafeContract.balance == sp.tez(20))
-    timeSafeContract.withdraw([1]).run(sender = alice, now = sp.timestamp(2000))
-    scenario.verify(timeSafeContract.balance == sp.tez(0))
+    time_safe_contract = main.TimeSafe(alice)
+    scenario += time_safe_contract
+    time_safe_contract.deposit(sp.timestamp(100)).run(sender = bob, amount = sp.tez(10))
+    time_safe_contract.deposit(sp.timestamp(200)).run(sender = carl, amount = sp.tez(20))
+    time_safe_contract.withdraw([0,1]).run(sender = alice, now = sp.timestamp(0))
+    scenario.verify(time_safe_contract.balance == sp.tez(30))
+    time_safe_contract.withdraw([0,1]).run(sender = alice, now = sp.timestamp(100))
+    scenario.verify(time_safe_contract.balance == sp.tez(20))
+    time_safe_contract.withdraw([1]).run(sender = alice, now = sp.timestamp(2000))
+    scenario.verify(time_safe_contract.balance == sp.tez(0))
