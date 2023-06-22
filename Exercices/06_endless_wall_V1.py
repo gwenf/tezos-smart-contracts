@@ -4,16 +4,16 @@ import smartpy as sp
 def main():
 
     class EndlessWall(sp.Contract):
-       def __init__(self, initialText):
-           self.data.wallText = initialText
+       def __init__(self, initial_text):
+           self.data.wall_text = initial_text
     
        @sp.entrypoint
        def write_message(self, message):
-           self.data.wallText += ", " + message + " forever"
+           self.data.wall_text += ", " + message + " forever"
   
 @sp.add_test(name = "add my name")
 def test():
-   c1 = main.EndlessWall(initialText = "Axel on Tezos forever")
+   c1 = main.EndlessWall(initial_text = "Axel on Tezos forever")
    scenario = sp.test_scenario(main)
    scenario += c1
    scenario.h3("Testing write_message entrypoint")
