@@ -18,7 +18,7 @@ def main():
                 self.data.deposits[key].amount += sp.amount
 
         @sp.entrypoint
-        def claimPayments(self, source, packed_message, signature):
+        def claim_payments(self, source, packed_message, signature):
             key = sp.record(source = source, destination = sp.sender)
             deposit = self.data.deposits[key]
             assert sp.check_signature(deposit.public_key, signature, packed_message)
@@ -31,7 +31,7 @@ def main():
             sp.send(sp.sender, message.amount)
 
         @sp.entrypoint
-        def closeAccount(self, destination):
+        def close_account(self, destination):
             key = sp.record(source = sp.sender, destination = destination)
             assert self.data.deposits[key].deadline <= sp.now
             sp.send(sp.sender, self.data.deposits[key].amount)
@@ -50,9 +50,9 @@ def test():
     message = sp.record(destination = bob, amount = sp.tez(5), counter = sp.nat(0))
     packed_message = sp.pack(message)
     signature = sp.make_signature(alice.secret_key, packed_message)
-    micropayments.claimPayments(source = alice.address, packed_message = packed_message, signature = signature).run(sender = bob)
-    micropayments.claimPayments(source = alice.address, packed_message = packed_message, signature = signature).run(sender = bob, valid = False)
-    micropayments.closeAccount(bob).run(sender = alice.address, now = sp.timestamp(1001))
+    micropayments.claim_payments(source = alice.address, packed_message = packed_message, signature = signature).run(sender = bob)
+    micropayments.claim_payments(source = alice.address, packed_message = packed_message, signature = signature).run(sender = bob, valid = False)
+    micropayments.close_account(bob).run(sender = alice.address, now = sp.timestamp(1001))
 
             
     
