@@ -16,14 +16,14 @@ def main():
         
         def __init__(self):
             self.data.tokens = sp.big_map()
-            self.data.nextTokenID = sp.nat(1)
+            self.data.next_token_id = sp.nat(1)
 
         @sp.entrypoint
         def mint(self, metadata):
             operators = sp.set()
             sp.cast(operators, sp.set[operator_type])
-            self.data.tokens[self.data.nextTokenID] = sp.record(owner = sp.sender, metadata = metadata, operators = sp.set())
-            self.data.nextTokenID += 1
+            self.data.tokens[self.data.next_token_id] = sp.record(owner = sp.sender, metadata = metadata, operators = sp.set())
+            self.data.next_token_id += 1
 
         @sp.entrypoint
         def balance_of(self, callback, requests):
@@ -120,5 +120,4 @@ def test():
     #ledger.update_operators([sp.variant.add_operator(sp.record(owner = sp.alice, operator = marketplace.address, token_id = 1))])
     operator_data = sp.record(owner = alice.address, operator = marketplace.address, token_id = 1)
     ledger.update_operators([sp.variant("add_operator", operator_data)]).run(sender=alice)
-
     marketplace.buy(1).run(sender = bob, amount = sp.tez(10))
