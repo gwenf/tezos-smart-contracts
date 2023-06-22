@@ -5,17 +5,17 @@ def main():
 
     class StoreValue(sp.Contract):
        def __init__(self):
-           self.data.storedValue = sp.int(24)
+           self.data.stored_value = sp.int(24)
     
        @sp.entrypoint
        def add(self, a):
-          self.data.storedValue += a
+          self.data.stored_value += a
     
        @sp.entrypoint
        def sub(self, b):
            #you can help type inference with set.type to sp.TInt
            #sp.cast(b, sp.int)
-           self.data.storedValue -= b
+           self.data.stored_value -= b
 
 @sp.add_test(name = "Testing")
 def test():
