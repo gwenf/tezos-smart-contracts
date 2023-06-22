@@ -4,61 +4,61 @@ def main():
 
     class Raffle(sp.Contract):
         
-        def __init__(self, bidAmount, depositAmount, deadlineCommit, deadlineReveal):
-                self.data.bidAmount = bidAmount
-                self.data.depositAmount = depositAmount
-                self.data.deadlineCommit = deadlineCommit
-                self.data.deadlineReveal = deadlineReveal
+        def __init__(self, bid_amount, deposit_amount, deadline_commit, deadline_reveal):
+                self.data.bid_amount = bid_amount
+                self.data.deposit_amount = deposit_amount
+                self.data.deadline_commit = deadline_commit
+                self.data.deadline_reveal = deadline_reveal
                 self.data.players = sp.big_map()
-                self.data.nbPlayers = 0
-                self.data.totalDeposits = sp.mutez(0)
-                self.data.totalBids = sp.mutez(0)
+                self.data.nb_players = 0
+                self.data.total_deposits = sp.mutez(0)
+                self.data.total_bids = sp.mutez(0)
                 self.data.total = 0
-                self.data.nbRevealed = 0
+                self.data.nb_revealed = 0
             
         
         @sp.entrypoint
-        def bid(self, hashValue):
-            assert sp.amount == self.data.bidAmount + self.data.depositAmount
-            assert sp.now < self.data.deadlineCommit
-            self.data.players[self.data.nbPlayers] = sp.record(address = sp.sender, hashValue = hashValue, revealed = False)
-            self.data.nbPlayers += 1
-            self.data.totalDeposits += self.data.depositAmount
-            self.data.totalBids += self.data.bidAmount
+        def bid(self, hash_value):
+            assert sp.amount == self.data.bid_amount + self.data.deposit_amount
+            assert sp.now < self.data.deadline_commit
+            self.data.players[self.data.nb_players] = sp.record(address = sp.sender, hash_value = hash_value, revealed = False)
+            self.data.nb_players += 1
+            self.data.total_deposits += self.data.deposit_amount
+            self.data.total_bids += self.data.bid_amount
         
         @sp.entrypoint
-        def reveal(self, idPlayer, value):
-            assert sp.now < self.data.deadlineReveal
-            player = self.data.players[idPlayer]
-            assert player.hashValue == sp.blake2b(sp.pack(value))
-            self.data.players[idPlayer].revealed = True
+        def reveal(self, id_player, value):
+            assert sp.now < self.data.deadline_reveal
+            player = self.data.players[id_player]
+            assert player.hash_value == sp.blake2b(sp.pack(value))
+            self.data.players[id_player].revealed = True
             self.data.total += value
-            self.data.nbRevealed += 1
+            self.data.nb_revealed += 1
         
         @sp.entrypoint
-        def claimPrize(self):
-            assert sp.now > self.data.deadlineReveal
-            idWinner = sp.mod(self.data.total, self.data.nbPlayers)
-            winner = self.data.players[idWinner].address
-            assert self.data.players[idWinner].revealed
-            amount = self.data.totalBids + sp.split_tokens(self.data.totalDeposits, 1, self.data.nbRevealed)
+        def claim_prize(self):
+            assert sp.now > self.data.deadline_reveal
+            id_winner = sp.mod(self.data.total, self.data.nb_players)
+            winner = self.data.players[id_winner].address
+            assert self.data.players[id_winner].revealed
+            amount = self.data.total_bids + sp.split_tokens(self.data.total_deposits, 1, self.data.nb_revealed)
             sp.send(winner, amount)
-            del self.data.players[idWinner]
+            del self.data.players[id_winner]
         
         @sp.entrypoint
-        def claimDeposit(self, idPlayer):
-            assert sp.now > self.data.deadlineReveal
-            player = self.data.players[idPlayer]
+        def claim_deposit(self, id_player):
+            assert sp.now > self.data.deadline_reveal
+            player = self.data.players[id_player]
             assert player.revealed
             user = player.address
-            amountToShare = self.data.totalDeposits
-            idWinner = sp.mod(self.data.total, self.data.nbPlayers)
-            if self.data.players.contains(idWinner):
-                if not self.data.players[idWinner].revealed:
-                    amountToShare += self.data.totalBids
-            amount = sp.split_tokens(amountToShare, 1, self.data.nbRevealed)
+            amount_to_share = self.data.total_deposits
+            id_winner = sp.mod(self.data.total, self.data.nb_players)
+            if self.data.players.contains(id_winner):
+                if not self.data.players[id_winner].revealed:
+                    amount_to_share += self.data.total_bids
+            amount = sp.split_tokens(amount_to_share, 1, self.data.nb_revealed)
             sp.send(user, amount)
-            del self.data.players[idPlayer]
+            del self.data.players[id_player]
 
 # Tests
 @sp.add_test(name="testing raffle")
@@ -73,29 +73,29 @@ def test():
     raffle.bid(sp.blake2b(sp.pack(10001))).run(sender = alice, amount = sp.tez(1001), now = sp.timestamp(0))
     scenario.verify(raffle.data.players[0].address == alice)
     scenario.verify(raffle.data.players[0].revealed == False)
-    scenario.verify(raffle.data.nbPlayers == 1)
+    scenario.verify(raffle.data.nb_players == 1)
     raffle.bid(sp.blake2b(sp.pack(10003))).run(sender = bob, amount = sp.tez(1001), now = sp.timestamp(0))
     scenario.verify(raffle.data.players[1].address == bob)
     scenario.verify(raffle.data.players[1].revealed == False)
-    scenario.verify(raffle.data.nbPlayers == 2)
+    scenario.verify(raffle.data.nb_players == 2)
     raffle.bid(sp.blake2b(sp.pack(10004))).run(sender = eve, amount = sp.tez(1001), now = sp.timestamp(0))
     scenario.verify(raffle.data.players[2].address == eve)
     scenario.verify(raffle.data.players[2].revealed == False)
-    scenario.verify(raffle.data.nbPlayers == 3)
+    scenario.verify(raffle.data.nb_players == 3)
     #Test the reveal entrypoint
     scenario.h1("Reveal phase")
-    raffle.reveal(idPlayer=0, value=10001).run(sender = alice, now = sp.timestamp(150))
+    raffle.reveal(id_player=0, value=10001).run(sender = alice, now = sp.timestamp(150))
     scenario.verify(raffle.data.players[0].revealed == True)
-    raffle.reveal(idPlayer=1, value=10003).run(sender = bob, now = sp.timestamp(150))
+    raffle.reveal(id_player=1, value=10003).run(sender = bob, now = sp.timestamp(150))
     scenario.verify(raffle.data.players[1].revealed == True)
     scenario.verify(raffle.data.players[2].revealed == False)
-    # Test the claimPrize entrypoint
+    # Test the claim_prize entrypoint
     scenario.h1("Claim prize phase")
-    raffle.claimPrize().run(sender = alice, now = sp.timestamp(250))
-    raffle.claimDeposit(1).run(sender = bob, now = sp.timestamp(250))
-    raffle.claimDeposit(2).run(sender = eve, now = sp.timestamp(250), valid=False)
+    raffle.claim_prize().run(sender = alice, now = sp.timestamp(250))
+    raffle.claim_deposit(1).run(sender = bob, now = sp.timestamp(250))
+    raffle.claim_deposit(2).run(sender = eve, now = sp.timestamp(250), valid=False)
     scenario.verify(raffle.balance == sp.tez(0))
-    #Test the claimDeposit entrypoint
+    #Test the claim_deposit entrypoint
     scenario.h1("Claim deposit phase")
-    raffle.claimDeposit(0).run(sender = alice, valid=False)
+    raffle.claim_deposit(0).run(sender = alice, valid=False)
 
