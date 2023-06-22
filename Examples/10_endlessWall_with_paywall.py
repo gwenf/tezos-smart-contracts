@@ -4,8 +4,8 @@ import smartpy as sp
 def main():
 
     class EndlessWall(sp.Contract):
-       def __init__(self, initialText, owner):
-           self.data.wallText = initialText
+       def __init__(self, initial_text, owner):
+           self.data.wallText = initial_text
            self.data.nbCalls = 0
            self.data.owner = owner
     
@@ -32,7 +32,7 @@ def test():
    alice=sp.test_account("Alice").address
    bob=sp.test_account("Bob").address
    eve=sp.test_account("Eve").address
-   c1 = main.EndlessWall(initialText = "Axel on Tezos forever", owner=alice)
+   c1 = main.EndlessWall(initial_text = "Axel on Tezos forever", owner=alice)
    scenario = sp.test_scenario(main)
    scenario += c1
    scenario.h3(" Testing write_message is ok ")
