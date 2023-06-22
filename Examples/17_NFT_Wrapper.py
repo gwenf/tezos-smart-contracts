@@ -24,8 +24,8 @@ def main():
            self.data.owner = sp.sender
         
     class NftWrapperContract(sp.Contract):
-        def __init__(self, allowSales, owner, price):
-            self.data.allowSales = allowSales
+        def __init__(self, allow_sales, owner, price):
+            self.data.allow_sales = allow_sales
             self.data.price = price
             self.data.owner_wrapper = owner
             
@@ -37,7 +37,7 @@ def main():
             sp.transfer((), sp.amount, nft_contract)
                         
         @sp.entrypoint
-        def setPrice(self, new_price):
+        def set_price(self, new_price):
             assert sp.sender == self.data.owner_wrapper
             self.data.price = new_price
     
@@ -45,18 +45,18 @@ def main():
         @sp.entrypoint
         def buy(self):
             assert sp.amount == self.data.price
-            #assert self.data.allowSales == True
+            #assert self.data.allow_sales == True
             sp.send(self.data.owner_wrapper, self.data.price)
             self.data.owner_wrapper = sp.sender
             
         @sp.entrypoint
-        def setAllowSale(self, new_boolean):
+        def set_allow_sale(self, new_boolean):
             assert sp.sender == self.data.owner_wrapper
-            self.data.allowSales = new_boolean
+            self.data.allow_sales = new_boolean
     
         @sp.entrypoint
         def default(self):
-            assert self.data.allowSales == True
+            assert self.data.allow_sales == True
 
 @sp.add_test(name="test Wrapped Nft")
 def test():
@@ -65,7 +65,7 @@ def test():
    eve = sp.test_account("eve").address
    dan = sp.test_account("dan").address
    c1 = main.NftForSale(owner = alice, metadata = "Gwen's first NFT", price = sp.mutez(5000000))
-   c2 = main.NftWrapperContract(allowSales = sp.bool(True), price = sp.mutez(5000000), owner = bob)
+   c2 = main.NftWrapperContract(allow_sales = sp.bool(True), price = sp.mutez(5000000), owner = bob)
    scenario = sp.test_scenario(main)
    scenario +=c1
    scenario +=c2
@@ -75,12 +75,12 @@ def test():
    scenario.h3("testing buy NFT from Wrapper")
    c2.buyNFT(c1.address).run(sender = bob, amount=sp.tez(7), now = sp.timestamp(50))
    scenario.verify(c1.data.owner == c2.address)
-   scenario.h3("testing allowSales")
-   c2.setAllowSale(False).run(sender = eve, valid = False)
-   c2.setAllowSale(False).run(sender = bob)
-   scenario.h3("testing setPrice NFT Wrapper")
-   c2.setPrice(sp.tez(50)).run(sender = eve, valid = False)
-   c2.setPrice(sp.tez(50)).run(sender = bob)
+   scenario.h3("testing allow_sales")
+   c2.set_allow_sale(False).run(sender = eve, valid = False)
+   c2.set_allow_sale(False).run(sender = bob)
+   scenario.h3("testing set_price NFT Wrapper")
+   c2.set_price(sp.tez(50)).run(sender = eve, valid = False)
+   c2.set_price(sp.tez(50)).run(sender = bob)
    scenario.verify(c2.data.price == sp.tez(50))
    scenario.verify(c2.data.owner_wrapper == bob)
    scenario.h3("trying to buy nft from NFTforSale while not possible")
