@@ -25,7 +25,10 @@ def test():
    c1 = main.EndlessWall(initial_text = "Axel on Tezos forever", owner = alice)
    scenario = sp.test_scenario(main)
    scenario += c1
+   scenario.verify(c1.data.last_sender == sp.none)
    c1.write_message("Ana & Jack").run(sender = eve)
+   scenario.verify(c1.data.last_sender == sp.some(eve))
+   scenario.verify(c1.data.last_sender.open_some() == eve) # equivalent to the previous line
    c1.write_message("freeCodeCamp").run(sender = bob)
    scenario.verify(c1.data.wall_text == "Axel on Tezos forever, Ana & Jack forever, freeCodeCamp forever")
    c1.write_message("freeCodeCamp").run(sender = bob, valid = False, exception="Do not spam the wall")
