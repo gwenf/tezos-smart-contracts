@@ -15,7 +15,7 @@ def main():
             self.data.max_value = new_max_value
                 
         @sp.entrypoint
-        def addNumber(self, a):
+        def add_number(self, a):
             self.data.min_value += a
             self.data.max_value += a
             
@@ -31,9 +31,9 @@ def test():
         #show that you have errors when not naming params in entrypoint call
         #c1.set(5, 10)
         scenario.h3(" Testing Add Number and Verify")
-        c1.addNumber(20)
+        c1.add_number(20)
         scenario.verify(c1.data.min_value == 25)
         scenario.verify(c1.data.max_value == 30)
-        c1.addNumber(-50)
+        c1.add_number(-50)
         scenario.verify(c1.data.min_value == -25)
         scenario.verify(c1.data.max_value == -20)
