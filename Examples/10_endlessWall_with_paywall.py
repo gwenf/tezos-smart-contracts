@@ -17,9 +17,9 @@ def main():
            self.data.nbCalls += 1
     
        @sp.entrypoint
-       def claim(self, requestedAmount):
+       def claim(self, requested_amount):
             assert sp.sender == self.data.owner, "not your money"
-            sp.send(self.data.owner, requestedAmount)
+            sp.send(self.data.owner, requested_amount)
     
        @sp.entrypoint
        def claim_all(self):
