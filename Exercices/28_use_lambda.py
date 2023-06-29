@@ -16,24 +16,24 @@ def main():
            self.data.owner = owner
            self.data.metadata = metadata
            self.data.price = price
-           self.data.priceUpdateRule = new_price
+           self.data.price_update_rule = new_price
     
        @sp.entrypoint
        def buy(self):
            assert sp.amount == self.data.price
            sp.send(self.data.owner, self.data.price)
            self.data.owner = sp.sender
-           self.data.price = self.data.priceUpdateRule(self.data.price)
+           self.data.price = self.data.price_update_rule(self.data.price)
 
        @sp.entrypoint
        def change_rule(self, newRule):
-           self.data.priceUpdateRule = newRule
+           self.data.price_update_rule = newRule
 
 @sp.add_test(name='Testing Update Price')
 def test():
-    alice = sp.test_account("alice").address
-    bob = sp.test_account("bob").address
-    eve = sp.test_account("eve").address
+    alice = sp.test_account("alice")
+    bob = sp.test_account("bob")
+    eve = sp.test_account("eve")
     c1 = main.NftForSale(owner = alice, metadata = "Gwen's nft", price=sp.mutez(5000000))
     scenario = sp.test_scenario(main)
     scenario +=c1
