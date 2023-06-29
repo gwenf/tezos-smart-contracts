@@ -15,13 +15,13 @@ def main():
      
         @sp.entrypoint
         def write_message(self, text, timestamp):
-           data = sp.record(text = "", timestamp = sp.timestamp(0))
+           data = sp.record(text = "", timestamp = sp.now)
            if self.data.messages.contains(sp.sender):
                data = self.data.messages[sp.sender]
                data.text += "," + text
            else:
                data.text = text
-           data.timestamp = timestamp
+           data.timestamp = sp.now
            self.data.messages[sp.sender] = data
     
        
