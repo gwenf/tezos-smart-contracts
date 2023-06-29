@@ -17,7 +17,7 @@ def main():
     
        @sp.entrypoint
        def write_message(self, message):
-           assert (sp.len(message) <= 30) & (sp.len(message) >= 3), "invalid size message"
+           assert (sp.len(message) <= 30) and (sp.len(message) >= 3), "invalid size message"
            assert sp.amount == sp.tez(1), "incorrect amount"
            self.data.wall_text += ", " + message + " forever"
            self.data.nb_calls += 1
@@ -29,9 +29,9 @@ def main():
   
 @sp.add_test(name = "add my name")
 def test():
-   alice=sp.test_account("Alice").address
-   bob=sp.test_account("Bob").address
-   eve=sp.test_account("Eve").address
+   alice=sp.test_account("Alice")
+   bob=sp.test_account("Bob")
+   eve=sp.test_account("Eve")
    c1 = main.EndlessWall(initial_text = "Axel on Tezos forever")
    scenario = sp.test_scenario(main)
    scenario += c1
