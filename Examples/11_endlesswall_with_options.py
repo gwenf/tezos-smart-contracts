@@ -19,10 +19,10 @@ def main():
   
 @sp.add_test(name = "add my name")
 def test():
-   alice=sp.test_account("Alice").address
-   bob=sp.test_account("Bob").address
-   eve=sp.test_account("Eve").address
-   c1 = main.EndlessWall(initial_text = "Axel on Tezos forever", owner = alice)
+   alice=sp.test_account("Alice")
+   bob=sp.test_account("Bob")
+   eve=sp.test_account("Eve")
+   c1 = main.EndlessWall(initial_text = "Axel on Tezos forever", owner = alice.address)
    scenario = sp.test_scenario(main)
    scenario += c1
    scenario.verify(c1.data.last_sender == sp.none)
