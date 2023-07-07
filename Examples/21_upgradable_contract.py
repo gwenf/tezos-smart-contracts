@@ -6,7 +6,6 @@ def main():
     class DataEndlessWall(sp.Contract):
        def __init__(self, owner):
            self.data.wall_content = sp.big_map({})
-           self.data.nb_calls = 0
            self.data.owner = owner
     
        @sp.entrypoint
@@ -48,7 +47,7 @@ def main():
             sp.transfer(new_contract, sp.tez(0), wall_update_owner)
 
 
-    class UpgradableEndlessWallV2(sp.Contract):
+    class Upgradableendless_wall_V2(sp.Contract):
         def __init__(self, wall_contract, owner):
             self.data.owner = owner
             self.data.wall_contract = wall_contract
@@ -78,15 +77,15 @@ def test():
     sc = sp.test_scenario(main)
     innerWall = main.DataEndlessWall(alice.address)
     sc += innerWall
-    endlessWallV1 = main.UpgradableEndlessWall(wall_contract = innerWall.address, owner = alice.address)
-    sc += endlessWallV1
-    innerWall.update_owner(endlessWallV1.address).run(sender = alice)
-    endlessWallV1.write_message("Message with the old version can be very long").run(sender = bob)
-    endlessWallV2 = main.UpgradableEndlessWallV2(wall_contract = innerWall.address, owner = alice.address)
-    sc += endlessWallV2
-    endlessWallV1.upgrade(endlessWallV2.address).run(sender = alice)
-    endlessWallV2.write_message("Long messages aren't allowed anymore").run(sender = eve, valid=False)
-    endlessWallV2.write_message("Short messages are ok").run(sender = eve)
+    endless_wall_V1 = main.UpgradableEndlessWall(wall_contract = innerWall.address, owner = alice.address)
+    sc += endless_wall_V1
+    innerWall.update_owner(endless_wall_V1.address).run(sender = alice)
+    endless_wall_V1.write_message("Message with the old version can be very long").run(sender = bob)
+    endless_wall_V2 = main.Upgradableendless_wall_V2(wall_contract = innerWall.address, owner = alice.address)
+    sc += endless_wall_V2
+    endless_wall_V1.upgrade(endless_wall_V2.address).run(sender = alice)
+    endless_wall_V2.write_message("Long messages aren't allowed anymore").run(sender = eve, valid=False)
+    endless_wall_V2.write_message("Short messages are ok").run(sender = eve)
     
     
     
