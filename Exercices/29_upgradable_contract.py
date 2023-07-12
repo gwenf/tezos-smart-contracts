@@ -87,6 +87,11 @@ def main():
                                             entrypoint="update_owner").unwrap_some()
             sp.transfer(new_contract, sp.tez(0), wall_update_owner)
 
+        @sp.entrypoint
+        def claim(self):
+            assert sp.sender == self.data.owner
+            sp.send(sp.sender, sp.balance)
+
 
 
 @sp.add_test(name = "add my name")
@@ -106,3 +111,4 @@ def test():
     endless_wall_V1.upgrade(endless_wall_V2.address).run(sender = alice)
     endless_wall_V2.write_message("Long messages aren't allowed anymore").run(sender = eve, amount = sp.tez(1), valid=False)
     endless_wall_V2.write_message("Short messages are ok").run(sender = eve, amount = sp.tez(1))
+    endless_wall_V2.claim().run(sender = alice)
