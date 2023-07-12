@@ -19,15 +19,12 @@ def main():
            data.timestamp = sp.now
            self.data.wall_content[sp.sender] = data
 
-       @sp.onchain_view
-       def read_messages(self, user):
-           return self.data.wall_content[user]
 
     class EndlessWall_v2(sp.Contract):
-       def __init__(self, owner, old_contract):
+       def __init__(self, owner, owner_public_key):
            self.data.wall_content = sp.big_map({})
            self.data.owner = owner
-           self.data.old_contract = old_contract
+           self.data.owner_public_key = owner_public_key
     
        @sp.entrypoint
        def write_message(self, message):
@@ -44,19 +41,14 @@ def main():
            self.data.wall_content[sp.sender] = data
 
        @sp.entrypoint
-       def transfer_old_messages(self):
-           old_data = sp.view("read_messages",
-               self.data.old_contract,
-               sp.sender,
-               sp.record(text = sp.string, timestamp = sp.timestamp)).unwrap_some()
+       def transfer_old_messages(self, packed_old_data, signature):
+           assert sp.check_signature(self.data.owner_public_key, signature, packed_old_data)
+           old_data = sp.unpack(packed_old_data, sp.record(text = sp.string, timestamp = sp.timestamp)).unwrap_some()
            self.data.wall_content[sp.sender] = old_data
            
        @sp.onchain_view
        def read_message(self, user):
            return self.data.wall_content[user]
-
-
-
 
 
 @sp.add_test(name = "add my name")
@@ -69,12 +61,12 @@ def test():
     sc += endless_wall
     endless_wall.write_message("Message with the old version can be very long").run(sender = bob)
 
-    endless_wall_v2 = main.EndlessWall_v2(owner = alice.address, old_contract = endless_wall.address)
+    endless_wall_v2 = main.EndlessWall_v2(owner = alice.address, owner_public_key = alice.public_key)
     sc += endless_wall_v2
     endless_wall_v2.write_message("Long messages are not allowed anymore").run(sender = eve, amount = sp.tez(1), valid=False)
     endless_wall_v2.write_message("Short messages are ok").run(sender = eve, amount = sp.tez(1))
-    endless_wall_v2.transfer_old_messages().run(sender = bob)
+    old_data = endless_wall.data.wall_content[bob.address]
+    packed_old_data = sp.pack(old_data)
+    signature = sp.make_signature(alice.secret_key, packed_old_data)
+    endless_wall_v2.transfer_old_messages(packed_old_data = packed_old_data, signature = signature).run(sender = bob)
     endless_wall_v2.write_message("New short message from bob").run(sender = bob, amount = sp.tez(1))
-
-    
-    
