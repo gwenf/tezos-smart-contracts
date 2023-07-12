@@ -64,6 +64,7 @@ def main():
         @sp.entrypoint
         def write_message(self, message):
            assert sp.len(message) <= 30, "Wall v2 requires message lengths under 30"
+           assert sp.amount == sp.tez(1)
            opt_data = sp.view("read_data",
                               self.data.wall_contract,
                               sp.sender,
@@ -103,5 +104,5 @@ def test():
     endless_wall_V2 = main.Upgradableendless_wall_V2(wall_contract = innerWall.address, owner = alice.address)
     sc += endless_wall_V2
     endless_wall_V1.upgrade(endless_wall_V2.address).run(sender = alice)
-    endless_wall_V2.write_message("Long messages aren't allowed anymore").run(sender = eve, valid=False)
-    endless_wall_V2.write_message("Short messages are ok").run(sender = eve)
+    endless_wall_V2.write_message("Long messages aren't allowed anymore").run(sender = eve, amount = sp.tez(1), valid=False)
+    endless_wall_V2.write_message("Short messages are ok").run(sender = eve, amount = sp.tez(1))
