@@ -28,7 +28,7 @@ def main():
     
        @sp.entrypoint
        def write_message(self, message):
-           assert sp.amount >= sp.tez(1)
+           assert sp.amount == sp.tez(1)
            assert len(message) < 30, "error message"
            
            data = sp.record(text = "", timestamp = sp.timestamp(0))
@@ -47,6 +47,11 @@ def main():
            assert old_data_with_user.user == sp.sender
            self.data.wall_content[sp.sender] = old_data_with_user.data
            
+       @sp.entrypoint
+       def claim(self):
+           assert sp.sender == self.data.owner
+           sp.send(sp.sender, sp.balance)
+
        @sp.onchain_view
        def read_message(self, user):
            return self.data.wall_content[user]
@@ -72,3 +77,4 @@ def test():
     signature = sp.make_signature(alice.secret_key, packed_old_data)
     endless_wall_v2.transfer_old_messages(packed_old_data = packed_old_data, signature = signature).run(sender = bob)
     endless_wall_v2.write_message("New short message from bob").run(sender = bob, amount = sp.tez(1))
+    endless_wall_v2.claim().run(sender = alice)
