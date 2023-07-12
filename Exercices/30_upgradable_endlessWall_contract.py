@@ -43,8 +43,9 @@ def main():
        @sp.entrypoint
        def transfer_old_messages(self, packed_old_data, signature):
            assert sp.check_signature(self.data.owner_public_key, signature, packed_old_data)
-           old_data = sp.unpack(packed_old_data, sp.record(text = sp.string, timestamp = sp.timestamp)).unwrap_some()
-           self.data.wall_content[sp.sender] = old_data
+           old_data_with_user = sp.unpack(packed_old_data, sp.record(data = sp.record(text = sp.string, timestamp = sp.timestamp), user = sp.address)).unwrap_some()
+           assert old_data_with_user.user == sp.sender
+           self.data.wall_content[sp.sender] = old_data_with_user.data
            
        @sp.onchain_view
        def read_message(self, user):
@@ -66,7 +67,8 @@ def test():
     endless_wall_v2.write_message("Long messages are not allowed anymore").run(sender = eve, amount = sp.tez(1), valid=False)
     endless_wall_v2.write_message("Short messages are ok").run(sender = eve, amount = sp.tez(1))
     old_data = endless_wall.data.wall_content[bob.address]
-    packed_old_data = sp.pack(old_data)
+    old_data_with_user = sp.record(data = old_data, user = bob.address)
+    packed_old_data = sp.pack(old_data_with_user)
     signature = sp.make_signature(alice.secret_key, packed_old_data)
     endless_wall_v2.transfer_old_messages(packed_old_data = packed_old_data, signature = signature).run(sender = bob)
     endless_wall_v2.write_message("New short message from bob").run(sender = bob, amount = sp.tez(1))
