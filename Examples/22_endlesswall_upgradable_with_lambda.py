@@ -2,11 +2,12 @@ import smartpy as sp
 
 @sp.module
 def main():
-    def default_verify_message(message):
+    def default_verify_message(message, amount):
     	pass
 
-    def upgraded_verify_message(message):
+    def upgraded_verify_message(message, amount):
         assert sp.len(message) <= 30, "Wall v2 requires message lengths under 30"
+        assert amount == sp.tez(1)
         
     
     class EndlessWall(sp.Contract):
@@ -17,9 +18,9 @@ def main():
     
        @sp.entrypoint
        def write_message(self, message):
-           self.data.verify(message)
 
            data = sp.record(text = "", timestamp = sp.timestamp(0))
+           self.data.verify(sp.record(message = message, amount = sp.amount))
            if self.data.wall_content.contains(sp.sender):
                data = self.data.wall_content[sp.sender]
                data.text += "," + message
@@ -44,5 +45,6 @@ def test():
     sc += endless_wall
     endless_wall.write_message("Message with the old version can be very long").run(sender = bob)
     endless_wall.set_verify(main.upgraded_verify_message).run(sender = alice)
-    endless_wall.write_message("Long messages aren't allowed anymore").run(sender = bob, valid = False)
-    endless_wall.write_message("Short messages are ok").run(sender = bob)    
+    endless_wall.write_message("Long messages aren't allowed anymore").run(sender = bob, amount = sp.tez(1), valid = False)
+    endless_wall.write_message("Don't forget to pay").run(sender = bob, valid = False)
+    endless_wall.write_message("Short messages are ok").run(sender = bob, amount = sp.tez(1))
