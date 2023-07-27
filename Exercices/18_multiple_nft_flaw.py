@@ -4,8 +4,7 @@ import smartpy as sp
 def main():
 
     class MultipleNftSingleContract(sp.Contract):
-        def __init__(self, owner):
-            self.data.owner = owner
+        def __init__(self):
             self.data.next_id = 1
             self.data.tokens = sp.big_map ({})
     
@@ -18,10 +17,8 @@ def main():
             assert sp.amount == token.price
             #Send 5% of the price to the author of the token
             author_fee = sp.split_tokens(token.price, 5, 100)
-            #sp.send(token.author, author_fee)
-            sp.send(self.data.owner, sp.amount - author_fee)
+            sp.send(token.owner, sp.amount - author_fee)
             sp.send(token.author, author_fee)
-            #Replace owner with the caller in the token
             token.owner = sp.sender
             #Increase price by 10% in the token
             token.price += sp.split_tokens(token.price, 10, 100)
@@ -41,7 +38,7 @@ def test():
     alice = sp.test_account('alice').address
     bob = sp.test_account('bob').address
     eve = sp.test_account('eve').address
-    c1 = main.MultipleNftSingleContract(alice)
+    c1 = main.MultipleNftSingleContract()
     scenario = sp.test_scenario(main)
     scenario += c1
     c1.mint(metadata='second contract', price=sp.tez(2)).run(sender=author)
